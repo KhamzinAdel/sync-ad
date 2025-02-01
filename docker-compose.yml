@@ -1,0 +1,16 @@
+services:
+  oracle:
+    image: container-registry.oracle.com/database/free:${ORACLE_VERSION:-latest}
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - oracle-backup:/opt/oracle/backup
+    environment:
+      - ORACLE_PWD=oraclepass
+    ports:
+      - "1521:1521"
+    healthcheck:
+      test: /opt/oracle/checkDBStatus.sh
+
+volumes:
+  oracle-data:
+  oracle-backup:

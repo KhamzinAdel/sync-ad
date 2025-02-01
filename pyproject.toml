@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "diplom"
+version = "0.1.0"
+description = ""
+authors = ["KhamzinAdel <khamzin.adel@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+sqlalchemy = "^2.0.36"
+oracledb = "^2.5.0"
+pydantic-settings = "^2.6.1"
+python-ldap = "^3.4.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
