@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DatabaseSettings(BaseSettings):
-    """Настройки для подключения к Oracle."""
+    """Настройки для подключения к Oracle"""
 
     ORACLE_PWD: str
     ORACLE_USERNAME: str

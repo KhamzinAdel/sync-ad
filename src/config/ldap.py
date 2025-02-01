@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class LdapSettings(BaseSettings):
-    """Настройки для подключения к LDAP."""
+    """Настройки для подключения к LDAP"""
 
     BASE_DN: str
     LDAP_SERVER: str
