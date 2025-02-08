@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import mapped_column, relationship, Mapped
 
-from src.database import Base, engine
+from src.database import Base
 
 
 # Модель "Пользователи и компьютеры"

@@ -9,8 +9,9 @@ readme = "README.md"
 python = "^3.10"
 sqlalchemy = "^2.0.36"
 oracledb = "^2.5.0"
-pydantic-settings = "^2.6.1"
 python-ldap = "^3.4.4"
+ruff = "^0.9.5"
+pydantic-settings = "^2.7.1"
 
 
 [build-system]
