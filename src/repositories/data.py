@@ -4,10 +4,9 @@ from src.database import Session
 from src.models import UserComputer, Branch
 
 
-class UserComputerService:
+class DataRepository:
 
-    @classmethod
-    def get_user_computer_by_id(cls, user_computer_by_id: int) -> UserComputer:
+    def get_user_computer_by_id(self, user_computer_by_id: int) -> UserComputer:
         """
         Получаем объект пользователя и компьютера по id
         """
@@ -17,11 +16,7 @@ class UserComputerService:
             record = result.scalar_one_or_none()
             return record
 
-
-class BranchService:
-
-    @classmethod
-    def get_branches(cls, user_computer_by_id: int) -> UserComputer:
+    def get_branches(self, user_computer_by_id: int) -> UserComputer:
         """
         Получаем все филиалы по id OU
         """

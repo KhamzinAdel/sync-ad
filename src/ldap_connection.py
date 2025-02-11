@@ -1,14 +1,14 @@
 import ldap
 
-from settings import settings
+from settings import ldap_settings
 from src.exceptions import LDAPConnectionError
 
 
 class LdapConnection:
     def __init__(self):
-        self.server = settings.ldap.LDAP_SERVER
-        self.user = settings.ldap.LDAP_USER
-        self.password = settings.ldap.LDAP_PASSWORD
+        self.server = ldap_settings.LDAP_SERVER
+        self.user = ldap_settings.LDAP_USER
+        self.password = ldap_settings.LDAP_PASSWORD
         self.connection = None
 
     def __enter__(self):

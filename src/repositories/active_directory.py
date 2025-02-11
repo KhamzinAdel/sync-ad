@@ -1,22 +1,23 @@
-import logging
 import ldap
+import logging
 import ldap.modlist as modlist
 
 from src.ldap_connection import LdapConnection
-from src.settings import settings
+from src.settings import ldap_settings
 
 logger = logging.getLogger(__name__)
 
 
-class ADService:
+class ADRepository:
+    """
+    Репозиторий для работы с Active Directory
+    """
 
-    @classmethod
-    def create_ou(cls, ou_name: str) -> str:
+    def create_ou(self, ou_name: str) -> str:
         """
         Создаем OU (Организационную единицу) в Active Directory
         """
-
-        dn = f"ou={ou_name},{settings.ldap.BASE_DN}"
+        dn = f"ou={ou_name},{ldap_settings.BASE_DN}"
         attrs = {
             'objectClass': [b'top', b'organizationalUnit'],
             'ou': [ou_name.encode('utf-8')]
@@ -32,13 +33,11 @@ class ADService:
                 logger.error(f"Ошибка при создании OU: {e}")
                 return f"Ошибка: {e}"
 
-    @classmethod
-    def add_branches_to_ou(cls, ou_name: str, branches: list) -> str:
+    def add_branches_to_ou(self, ou_name: str, branches: list) -> str:
         """
         Добавляем филиалы в OU в Active Directory
         """
-
-        ou_dn = f"ou={ou_name},{settings.ldap.BASE_DN}"
+        ou_dn = f"ou={ou_name},{ldap_settings.BASE_DN}"
 
         for branch in branches:
             with LdapConnection() as conn:
@@ -57,8 +56,7 @@ class ADService:
 
         return "Все филиалы были успешно добавлены."
 
-    @classmethod
-    def check_ou_exists(cls, ou_name: str) -> bool:
+    def check_ou_exists(self, ou_name: str) -> bool:
         """
         Проверяем, существует ли OU (Организационная единица) в Active Directory
         """
@@ -68,7 +66,7 @@ class ADService:
         try:
             with LdapConnection() as conn:
                 result = conn.connection.search_s(
-                    settings.ldap.BASE_DN,
+                    ldap_settings.BASE_DN,
                     ldap.SCOPE_ONELEVEL,
                     search_filter,
                     attributes,

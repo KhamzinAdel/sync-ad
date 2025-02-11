@@ -4,7 +4,6 @@ from sqlalchemy.orm import mapped_column, relationship, Mapped
 from src.database import Base
 
 
-# Модель "Пользователи и компьютеры"
 class UserComputer(Base):
     __tablename__ = 'users_computers'
 
@@ -15,7 +14,6 @@ class UserComputer(Base):
     branches: Mapped[list['Branch']] = relationship('Branch', back_populates='user_computer')
 
 
-# Модель "Филиалы"
 class Branch(Base):
     __tablename__ = 'branches'
 
