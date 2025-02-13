@@ -26,7 +26,7 @@ class ADRepository:
 
         with LdapConnection() as conn:
             try:
-                conn.connection.add(dn, ldif)
+                conn.add(dn, ldif)
                 logger.info(f"Организационная единица '{ou_name}' успешно создана.")
                 return ou_name
             except ldap.LDAPError as e:
@@ -48,7 +48,7 @@ class ADRepository:
                 }
                 ldif = modlist.addModlist(attrs)
                 try:
-                    conn.connection.add(branch_dn, ldif)
+                    conn.add(branch_dn, ldif)
                     logger.info(f"Филиал '{branch}' успешно добавлен.")
                 except ldap.LDAPError as e:
                     logger.error(f"Ошибка при добавлении филиала '{branch}': {e}")
@@ -65,7 +65,7 @@ class ADRepository:
 
         try:
             with LdapConnection() as conn:
-                result = conn.connection.search_s(
+                result = conn.search_s(
                     ldap_settings.BASE_DN,
                     ldap.SCOPE_ONELEVEL,
                     search_filter,
