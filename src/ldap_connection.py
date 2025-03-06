@@ -23,10 +23,10 @@ class LdapConnection:
             self.connection.unbind()
 
 
-# def main():
-#    with LdapConnection() as conn:
-#        print(conn)
+def main():
+    with LdapConnection() as conn:
+        print(conn)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

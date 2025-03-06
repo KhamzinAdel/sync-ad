@@ -1,5 +1,6 @@
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import mapped_column, relationship, Mapped
+from src.database import engine
 
 from src.database import Base
 
@@ -25,11 +26,9 @@ class Branch(Base):
     user_computer: Mapped['UserComputer'] = relationship('UserComputer', back_populates='branches')
 
 
-#async def setup_database():
-#    async with engine.begin() as conn:
-#        await conn.run_sync(Base.metadata.create_all)
+def setup_database():
+    Base.metadata.create_all(engine)
 
-#if __name__ == '__main__':
-#    import asyncio
 
-#    asyncio.run(setup_database())
+if __name__ == '__main__':
+    setup_database()
