@@ -1,0 +1,3 @@
+class LDAPConnectionError(Exception):
+    """Ошибка подключение к LDAP"""
+    ...

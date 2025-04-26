@@ -1,20 +1,33 @@
-import logging
 import ldap
+import logging
 from ldap.modlist import addModlist
+from abc import ABC, abstractmethod
 
-from src.ldap_connection import LdapConnection
-from src.settings import ldap_settings
-from enums import GroupScope, GroupType
+from config import settings
+from infrastructure.ldap_connection import LdapConnection
+from entities.enums import GroupScope, GroupType
+from entities.schemas import ADGroupSchema
 
 logger = logging.getLogger(__name__)
 
 
-class ADGroupRepository:
+class AbstractADGroupRepository(ABC):
+
+    @abstractmethod
+    def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+        raise NotImplementedError
+
+    @abstractmethod
+    def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+        raise NotImplementedError
+
+
+class ADGroupRepository(AbstractADGroupRepository):
     """
     Репозиторий для работы с Active Directory Group
     """
 
-    def create_access_group(self, group_name: str, ou_path: str):
+    def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
         """
         Создает группу доступа.
         - Имя группы (name) начинается с подчеркивания.
@@ -26,12 +39,11 @@ class ADGroupRepository:
         name = f"_{group_name}"  # Имя группы начинается с подчеркивания
         sam_account_name = group_name  # samAccountName без подчеркивания
 
-        # dn = f"cn={name},{ldap_settings.BASE_DN}"
-        dn = f"cn={name},{ou_path}"
+        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
 
         attrs = {
             'objectClass': [b'top', b'group'],
-            'cn': [name.encode('utf-8')],
+            'CN': [name.encode('utf-8')],
             'sAMAccountName': [sam_account_name.encode('utf-8')],
             'groupType': [
                 str(self._get_group_type_value(GroupScope.GLOBAL, GroupType.SECURITY)).encode('utf-8')
@@ -41,14 +53,20 @@ class ADGroupRepository:
 
         with LdapConnection() as conn:
             try:
-                conn.add(dn, ldif)
-                logger.info(f"Группа доступа '{name}' успешно создана.")
-                return name
-            except ldap.LDAPError as e:
-                logger.error(f"Ошибка при создании группы доступа: {e}")
-                return f"Ошибка: {e}"
+                conn.add_s(dn, ldif)
+                logger.info("Группа доступа '%s' успешно создана.", name)
+                return ADGroupSchema(name=name)
 
-    def create_mailing_group(self, group_name: str, ou_path: str):
+            except ldap.NO_SUCH_OBJECT as e:
+                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+
+            except ldap.ALREADY_EXISTS as e:
+                logger.info("Группа доступа '%s' уже существует.", name)
+
+            except ldap.LDAPError as e:
+                logger.error("Ошибка при создании группы доступа: %s", e)
+
+    def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
         """
         Создает группу рассылки.
         - Имя группы (name) — простое.
@@ -60,13 +78,12 @@ class ADGroupRepository:
         name = group_name  # Имя группы
         sam_account_name = f"Р_{group_name}"  # samAccountName начинается с "Р_"
 
-        # dn = f"cn={name},{ldap_settings.BASE_DN}"
-        dn = f"cn={name},{ou_path}"
+        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
 
         # Атрибуты группы
         attrs = {
             'objectClass': [b'top', b'group'],
-            'cn': [name.encode('utf-8')],
+            'CN': [name.encode('utf-8')],
             'sAMAccountName': [sam_account_name.encode('utf-8')],
             'groupType': [
                 str(self._get_group_type_value(GroupScope.UNIVERSAL, GroupType.DISTRIBUTION)).encode('utf-8')
@@ -76,17 +93,24 @@ class ADGroupRepository:
 
         with LdapConnection() as conn:
             try:
-                conn.add(dn, ldif)
-                logger.info(f"Группа рассылки '{name}' успешно создана.")
-                return name
+                conn.add_s(dn, ldif)
+                logger.info("Группа рассылки '%s' успешно создана.", name)
+                return ADGroupSchema(name=name)
+
+            except ldap.NO_SUCH_OBJECT as e:
+                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+
+            except ldap.ALREADY_EXISTS as e:
+                logger.info("Группа рассылки '%s' уже существует.", name)
+
             except ldap.LDAPError as e:
-                logger.error(f"Ошибка при создании группы рассылки: {e}")
-                return f"Ошибка: {e}"
+                logger.error("Ошибка при создании группы рассылки: %s", e)
 
     def _get_group_type_value(self, group_scope: GroupScope, group_type: GroupType) -> int:
         """
         Возвращает значение groupType на основе области действия и типа группы.
         """
+
         scope_value = {
             GroupScope.LOCAL_DOMAIN: 0x4,
             GroupScope.GLOBAL: 0x2,
@@ -99,25 +123,3 @@ class ADGroupRepository:
         }[group_type]
 
         return scope_value | type_value
-
-
-if __name__ == '__main__':
-    repo = ADGroupRepository()
-
-    # Путь к OU "Университет"
-    ou_path = "OU=Университет,DC=server,DC=local"
-    # ou_path = "OU=Университет,DC=server,DC=local"
-
-    # Создание группы рассылки
-    repo.create_mailing_group(
-        group_name="Университет",
-        ou_path=ou_path,
-    )
-
-    # Создание группы доступа
-    repo.create_access_group(
-        group_name="Университет",
-        ou_path=ou_path,
-    )
-
-
