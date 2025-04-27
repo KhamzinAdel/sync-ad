@@ -15,7 +15,6 @@ def sync_organizations_with_ad() -> None:
 
     organizations = organization_service.get_ou_to_active_directory()
 
-    # Открываем соединение один раз для создания всех подразделений и групп
     with LdapConnection() as conn:
         active_directory_service.active_directory.set_connection(conn)
         active_directory_service.active_directory_group.set_connection(conn)
