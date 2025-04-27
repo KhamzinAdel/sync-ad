@@ -69,12 +69,12 @@ class ActiveDirectoryService:
         group_access = self._create_access_group(ou_name, f'OU={ou_organization_name},{ou_path}', base_code)
 
         if group_access:
-            results['access_group'] = 'Создана'
+            results['access_group'] = group_access
 
         group_mailing = self._create_mailing_group(ou_name, f'OU={ou_organization_name},{ou_path}', base_code)
 
         if group_mailing:
-            results['mailing_group'] = 'Создана'
+            results['mailing_group'] = group_mailing
 
         logger.info(
             "Создана новая организационная единица: %s. "

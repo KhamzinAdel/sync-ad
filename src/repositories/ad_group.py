@@ -4,7 +4,6 @@ from ldap.modlist import addModlist
 from abc import ABC, abstractmethod
 
 from config import settings
-from infrastructure.ldap_connection import LdapConnection
 from entities.enums import GroupScope, GroupType
 from entities.schemas import ADGroupSchema
 
@@ -26,6 +25,13 @@ class ADGroupRepository(AbstractADGroupRepository):
     """
     Репозиторий для работы с Active Directory Group
     """
+
+    def __init__(self):
+        self._conn = None
+
+    def set_connection(self, conn):
+        """Установить внешнее соединение"""
+        self._conn = conn
 
     def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
         """
@@ -51,20 +57,19 @@ class ADGroupRepository(AbstractADGroupRepository):
         }
         ldif = addModlist(attrs)
 
-        with LdapConnection() as conn:
-            try:
-                conn.add_s(dn, ldif)
-                logger.info("Группа доступа '%s' успешно создана.", name)
-                return ADGroupSchema(name=name)
+        try:
+            self._conn.add_s(dn, ldif)
+            logger.info("Группа доступа '%s' успешно создана.", name)
+            return ADGroupSchema(name=name)
 
-            except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+        except ldap.NO_SUCH_OBJECT as e:
+            logger.info("Указанный путь %s не существует: %s", ou_path, e)
 
-            except ldap.ALREADY_EXISTS as e:
-                logger.info("Группа доступа '%s' уже существует.", name)
+        except ldap.ALREADY_EXISTS as e:
+            logger.info("Группа доступа '%s' уже существует.", name)
 
-            except ldap.LDAPError as e:
-                logger.error("Ошибка при создании группы доступа: %s", e)
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при создании группы доступа: %s", e)
 
     def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
         """
@@ -91,20 +96,19 @@ class ADGroupRepository(AbstractADGroupRepository):
         }
         ldif = addModlist(attrs)
 
-        with LdapConnection() as conn:
-            try:
-                conn.add_s(dn, ldif)
-                logger.info("Группа рассылки '%s' успешно создана.", name)
-                return ADGroupSchema(name=name)
+        try:
+            self._conn.add_s(dn, ldif)
+            logger.info("Группа рассылки '%s' успешно создана.", name)
+            return ADGroupSchema(name=name)
 
-            except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+        except ldap.NO_SUCH_OBJECT as e:
+            logger.info("Указанный путь %s не существует: %s", ou_path, e)
 
-            except ldap.ALREADY_EXISTS as e:
-                logger.info("Группа рассылки '%s' уже существует.", name)
+        except ldap.ALREADY_EXISTS as e:
+            logger.info("Группа рассылки '%s' уже существует.", name)
 
-            except ldap.LDAPError as e:
-                logger.error("Ошибка при создании группы рассылки: %s", e)
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при создании группы рассылки: %s", e)
 
     def _get_group_type_value(self, group_scope: GroupScope, group_type: GroupType) -> int:
         """

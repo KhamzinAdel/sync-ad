@@ -1,0 +1,35 @@
+import logging
+
+from logger import configure_logging
+from infrastructure.ldap_connection import LdapConnection
+from services import OrganizationUnitService, ActiveDirectoryService
+
+logger = logging.getLogger(__name__)
+
+
+def sync_organizations_with_ad() -> None:
+    """Вызов функции создания OU и групп"""
+
+    organization_service: OrganizationUnitService = OrganizationUnitService()
+    active_directory_service: ActiveDirectoryService = ActiveDirectoryService()
+
+    organizations = organization_service.get_ou_to_active_directory()
+
+    # Открываем соединение один раз для создания всех подразделений и групп
+    with LdapConnection() as conn:
+        active_directory_service.active_directory.set_connection(conn)
+        active_directory_service.active_directory_group.set_connection(conn)
+
+        for organization in organizations:
+            active_directory_service.create_uo_and_group(
+                ou_name=organization.name,
+                ou_path=organization.ou_path,
+                base_code=organization.base_code,
+            )
+
+    logger.info('Организации cинхронизированы с AD')
+
+
+if __name__ == '__main__':
+    configure_logging()
+    sync_organizations_with_ad()

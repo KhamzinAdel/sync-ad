@@ -4,7 +4,6 @@ import ldap.modlist as modlist
 from abc import ABC, abstractmethod
 
 from config import settings
-from infrastructure.ldap_connection import LdapConnection
 from entities.schemas import ADSchema
 
 logger = logging.getLogger(__name__)
@@ -26,10 +25,19 @@ class ADRepository(AbstractADRepository):
     Репозиторий для работы с Active Directory
     """
 
+    def __init__(self):
+        self._conn = None
+
+    def set_connection(self, conn):
+        """Установить внешнее соединение"""
+
+        self._conn = conn
+
     def create_ou(self, ou_name: str, ou_path: str) -> ADSchema:
         """
         Создаем OU (Организационную единицу) в Active Directory
         """
+
         dn = f"OU={ou_name},{ou_path},{settings.ldap.BASE_DN}"
         attrs = {
             'objectClass': [b'top', b'organizationalUnit'],
@@ -37,21 +45,19 @@ class ADRepository(AbstractADRepository):
         }
         ldif = modlist.addModlist(attrs)
 
-        with LdapConnection() as conn:
+        try:
+            self._conn.add_s(dn, ldif)
+            logger.info("Организационная единица '%s' успешно создана.", ou_name)
+            return ADSchema(name=ou_name)
 
-            try:
-                conn.add_s(dn, ldif)
-                logger.info("Организационная единица '%s' успешно создана.", ou_name)
-                return ADSchema(name=ou_name)
+        except ldap.NO_SUCH_OBJECT as e:
+            logger.info("Указанный путь %s не существует: %s", ou_path, e)
 
-            except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+        except ldap.ALREADY_EXISTS as e:
+            logger.info("Организационная единица '%s' уже существует.", ou_name)
 
-            except ldap.ALREADY_EXISTS as e:
-                logger.info("Организационная единица '%s' уже существует.", ou_name)
-
-            except ldap.LDAPError as e:
-                logger.error("Ошибка при создании OU: %s", e)
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при создании OU: %s", e)
 
     def check_ou_exists(self, ou_name: str) -> bool:
         """
@@ -61,14 +67,13 @@ class ADRepository(AbstractADRepository):
         attributes = ['OU']
 
         try:
-            with LdapConnection() as conn:
-                result = conn.search_s(
-                    settings.ldap.BASE_DN,
-                    ldap.SCOPE_ONELEVEL,
-                    search_filter,
-                    attributes,
-                )
-                logger.info("Организационная единица '%s' найдена в Active Directory.", ou_name)
-                return result
+            result = self._conn.search_s(
+                settings.ldap.BASE_DN,
+                ldap.SCOPE_ONELEVEL,
+                search_filter,
+                attributes,
+            )
+            logger.info("Организационная единица '%s' найдена в Active Directory.", ou_name)
+            return result
         except ldap.LDAPError as e:
             logger.error("Ошибка при поиске OU: %s", e)
