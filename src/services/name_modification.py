@@ -42,7 +42,7 @@ class OUBuilder:
         без добавления пробелов и схлопывания.
         """
 
-        allowed_chars = {'-', '.', '/', ' '}
+        allowed_chars = {'-', '.', ' '}
         return ''.join(
             char for char in name
             if char.isalnum() or char in allowed_chars
