@@ -55,7 +55,7 @@ class OUBuilder:
         # Разделяем full_name на части и чистим от пробелов
         name_parts = [part.strip() for part in full_name.split('/')]
 
-        resolved_parent_name = GROUP_NAME(parent_name, parent_name)
+        resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
 
         # allowed_name_parts = [cls._remove_unnecessary_char(name_part) for name_part in name_parts]
 
@@ -72,10 +72,12 @@ class OUBuilder:
         Удаляет специальные символы
         """
 
-        if len(name) <= max_length:
-            return cls._remove_unnecessary_char(name)
+        resolved_name = cls._remove_unnecessary_char(name)
 
-        words = name.split()
+        if len(resolved_name) <= max_length:
+            return resolved_name
+
+        words = resolved_name.split()
         result_words = []
 
         for word in words:
@@ -91,10 +93,10 @@ class OUBuilder:
         shortened_name = ' '.join(result_words)
 
         if len(shortened_name) <= max_length:
-            return cls._remove_unnecessary_char(shortened_name)
+            return shortened_name
 
         while len(shortened_name) > max_length and result_words:
             result_words.pop()
             shortened_name = ' '.join(result_words)
 
-        return cls._remove_unnecessary_char(shortened_name)
+        return shortened_name
