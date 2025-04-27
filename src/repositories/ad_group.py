@@ -110,8 +110,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         except ldap.LDAPError as e:
             logger.error("Ошибка при создании группы рассылки: %s", e)
 
-    @staticmethod
-    def _get_group_type_value(group_scope: GroupScope, group_type: GroupType) -> int:
+    def _get_group_type_value(self, group_scope: GroupScope, group_type: GroupType) -> int:
         """
         Возвращает значение groupType на основе области действия и типа группы.
         """
