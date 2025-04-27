@@ -2,9 +2,6 @@ import logging
 from logger import configure_logging
 from services import OrganizationUnitService, ActiveDirectoryService
 
-
-from entities.schemas import OrganizationUnitADSchema
-
 logger = logging.getLogger(__name__)
 
 
