@@ -54,17 +54,3 @@ class OrganizationUnitRepository(AbstractOrganizationUnitRepository):
                 ]
             except SQLAlchemyError as e:
                 logger.error('Ошибка при получении списка подразделений: %s', e)
-
-
-def main():
-    repository = OrganizationUnitRepository()
-
-    logging.info("Получаем список подразделений...")
-    print(repository.get_ou())
-
-    logging.info("Запрос выполнен успешно")
-
-
-
-if __name__ == "__main__":
-    main()
