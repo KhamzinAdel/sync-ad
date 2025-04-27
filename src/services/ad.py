@@ -64,7 +64,7 @@ class ActiveDirectoryService:
         ou_organization_name = self._create_ou(ou_name, ou_path)
 
         if not ou_organization_name:
-            return None
+            return
 
         group_access = self._create_access_group(ou_name, f'OU={ou_organization_name},{ou_path}', base_code)
 
