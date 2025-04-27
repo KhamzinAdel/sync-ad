@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from common.constants import ABBREVIATIONS
+from common.constants import ABBREVIATIONS, GROUP_NAME
 
 
 class Base36TimeConverter:
@@ -36,12 +36,13 @@ class OUBuilder:
     """Формирование названия OU и пути"""
 
     @classmethod
-    def remove_unnecessary_char(cls, name: str) -> str:
+    def _remove_unnecessary_char(cls, name: str) -> str:
         """
         Удаляет ВСЕ специальные символы, кроме "-" и ".",
         без добавления пробелов и схлопывания.
         """
-        allowed_chars = {'-', '.', '/', ' '}
+
+        allowed_chars = {'-', '.', ' '}
         return ''.join(
             char for char in name
             if char.isalnum() or char in allowed_chars
@@ -49,14 +50,17 @@ class OUBuilder:
 
     @classmethod
     def build_ou_path(cls, full_name: str, parent_name: str) -> str:
+        """Формирует путь к OU"""
 
         # Разделяем full_name на части и чистим от пробелов
         name_parts = [part.strip() for part in full_name.split('/')]
 
-        allowed_name_parts = [cls.remove_unnecessary_char(name_part) for name_part in name_parts]
+        resolved_parent_name = GROUP_NAME(parent_name, parent_name)
 
-        ou_parts = [f'OU={part}' for part in allowed_name_parts[1:-1]] + \
-                   [f'OU={parent_name}'] + [f'OU={allowed_name_parts[-1]}']
+        # allowed_name_parts = [cls._remove_unnecessary_char(name_part) for name_part in name_parts]
+
+        ou_parts = [f'OU={part}' for part in name_parts[1:-1]] + \
+                   [f'OU={resolved_parent_name}'] + [f'OU={name_parts[-1]}']
 
         return ','.join(ou_parts)
 
@@ -65,10 +69,11 @@ class OUBuilder:
         """
         Сокращает имя до максимальной длины, сохраняя осмысленность.
         Сначала применяет стандартные сокращения, затем, если необходимо, удаляем слова в конце.
+        Удаляет специальные символы
         """
 
         if len(name) <= max_length:
-            return cls.remove_unnecessary_char(name)
+            return cls._remove_unnecessary_char(name)
 
         words = name.split()
         result_words = []
@@ -86,10 +91,10 @@ class OUBuilder:
         shortened_name = ' '.join(result_words)
 
         if len(shortened_name) <= max_length:
-            return cls.remove_unnecessary_char(shortened_name)
+            return cls._remove_unnecessary_char(shortened_name)
 
         while len(shortened_name) > max_length and result_words:
             result_words.pop()
             shortened_name = ' '.join(result_words)
 
-        return cls.remove_unnecessary_char(shortened_name)
+        return cls._remove_unnecessary_char(shortened_name)
