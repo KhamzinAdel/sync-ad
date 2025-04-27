@@ -22,8 +22,3 @@ class OrganizationUnitService:
                     ou_path=OUBuilder.build_ou_path(ou.full_name, ou.parent_name),
                 ) for ou in organization_units
             ]
-
-
-if __name__ == '__main__':
-    service = OrganizationUnitService()
-    print(service.get_ou_to_active_directory())

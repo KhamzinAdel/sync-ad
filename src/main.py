@@ -1,5 +1,5 @@
 import logging
-from logger import configure_logging
+from infrastructure.logger import configure_logging
 from services import OrganizationUnitService, ActiveDirectoryService
 
 logger = logging.getLogger(__name__)

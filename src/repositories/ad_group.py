@@ -1,7 +1,8 @@
-import ldap
 import logging
-from ldap.modlist import addModlist
 from abc import ABC, abstractmethod
+
+import ldap
+from ldap.modlist import addModlist
 
 from config import settings
 from infrastructure.ldap_connection import LdapConnection
