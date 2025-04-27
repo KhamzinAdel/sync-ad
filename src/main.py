@@ -1,6 +1,6 @@
 import logging
 
-from logger import configure_logging
+from infrastructure.logger import configure_logging
 from infrastructure.ldap_connection import LdapConnection
 from services import OrganizationUnitService, ActiveDirectoryService
 
