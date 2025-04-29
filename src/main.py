@@ -28,6 +28,7 @@ def sync_organizations_with_ad() -> None:
                 )
 
         logger.info('Организации cинхронизированы с AD')
+        return
 
     logger.info('Организации не получены с AD')
 
