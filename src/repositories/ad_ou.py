@@ -38,7 +38,7 @@ class ADRepository(AbstractADRepository):
         Создаем OU (Организационную единицу) в Active Directory
         """
 
-        dn = f"OU={ou_name},{ou_path},{settings.ldap.BASE_DN}"
+        dn = f"OU={ou_name},{ou_path}"
         attrs = {
             'objectClass': [b'top', b'organizationalUnit'],
             'OU': [ou_name.encode('utf-8')]

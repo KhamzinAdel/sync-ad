@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from common.constants import ABBREVIATIONS, GROUP_NAME
+from common.constants import ABBREVIATIONS, GROUP_NAME, FULL_PATH_AD
 
 
 class Base36TimeConverter:
@@ -49,20 +49,14 @@ class OUBuilder:
         )
 
     @classmethod
-    def build_ou_path(cls, full_name: str, parent_name: str) -> str:
+    def build_ou_path(cls, full_path: str, parent_name: str) -> str:
         """Формирует путь к OU"""
 
-        # Разделяем full_name на части и чистим от пробелов
-        name_parts = [part.strip() for part in full_name.split('/')]
+        if full_path in FULL_PATH_AD:
+            resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
+            full_path = f'OU={resolved_parent_name},' + full_path
 
-        resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
-
-        # allowed_name_parts = [cls._remove_unnecessary_char(name_part) for name_part in name_parts]
-
-        ou_parts = [f'OU={part}' for part in name_parts[1:-1]] + \
-                   [f'OU={resolved_parent_name}'] + [f'OU={name_parts[-1]}']
-
-        return ','.join(ou_parts)
+        return full_path
 
     @classmethod
     def truncate_name(cls, name: str, max_length: int = 64) -> str:

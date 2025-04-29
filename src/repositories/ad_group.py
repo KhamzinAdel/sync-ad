@@ -3,7 +3,6 @@ import logging
 from ldap.modlist import addModlist
 from abc import ABC, abstractmethod
 
-from config import settings
 from entities.enums import GroupScope, GroupType
 from entities.schemas import ADGroupSchema
 
@@ -45,7 +44,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = f"_{group_name}"  # Имя группы начинается с подчеркивания
         sam_account_name = group_name  # samAccountName без подчеркивания
 
-        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
+        dn = f"CN={name},{ou_path}"
 
         attrs = {
             'objectClass': [b'top', b'group'],
@@ -83,7 +82,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = group_name  # Имя группы
         sam_account_name = f"Р_{group_name}"  # samAccountName начинается с "Р_"
 
-        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
+        dn = f"CN={name},{ou_path}"
 
         # Атрибуты группы
         attrs = {

@@ -1,3 +1,6 @@
+from config import settings
+
+# Константы для сокращений
 ABBREVIATIONS = {
     'управление': 'Упр.',
     'административно-правовое': 'Админ-прав.',
@@ -36,6 +39,19 @@ ABBREVIATIONS = {
 }
 
 
+# Название подразделения
 GROUP_NAME = {
     'Руководящие работники, управленческие подразделения и органы управления университета': 'Управленческие подразделения'
 }
+
+
+# Пути в AD по умолчанию
+FULL_PATH_AD = [
+    settings.ldap.BASE_DN,
+    'OU=Филиал в г. Набережные Челны,' + settings.ldap.BASE_DN,
+    'OU=Филиал в г. Елабуга,' + settings.ldap.BASE_DN,
+    'OU=Филиал в г. Зеленодольск,' + settings.ldap.BASE_DN,
+    'OU=Филиал в г. Набережные Челны,' + settings.ldap.BASE_DN,
+    'OU=Филиал в г. Чистополь,' + settings.ldap.BASE_DN,
+    'OU=Филиал в г. Джизаке,' + settings.ldap.BASE_DN,
+]
