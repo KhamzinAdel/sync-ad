@@ -19,6 +19,6 @@ class OrganizationUnitService:
                 OrganizationUnitADSchema(
                     name=ou.name,
                     base_code=Base36TimeConverter.to_base_36(ou.data_create),
-                    ou_path=OUBuilder.build_ou_path(ou.full_name, ou.parent_name),
+                    ou_path=OUBuilder.build_ou_path(ou.full_path, ou.parent_name),
                 ) for ou in organization_units
             ]

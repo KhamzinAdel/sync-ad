@@ -40,7 +40,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = f"_{group_name}"  # Имя группы начинается с подчеркивания
         sam_account_name = group_name  # samAccountName без подчеркивания
 
-        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
+        dn = f"CN={name},{ou_path}"
 
         attrs = {
             'objectClass': [b'top', b'group'],
@@ -59,7 +59,7 @@ class ADGroupRepository(AbstractADGroupRepository):
                 return ADGroupSchema(name=name)
 
             except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+                logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
             except ldap.ALREADY_EXISTS as e:
                 logger.info("Группа доступа '%s' уже существует.", name)
@@ -79,7 +79,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = group_name  # Имя группы
         sam_account_name = f"Р_{group_name}"  # samAccountName начинается с "Р_"
 
-        dn = f"CN={name},{ou_path},{settings.ldap.BASE_DN}"
+        dn = f"CN={name},{ou_path}"
 
         # Атрибуты группы
         attrs = {
@@ -99,7 +99,7 @@ class ADGroupRepository(AbstractADGroupRepository):
                 return ADGroupSchema(name=name)
 
             except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+                logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
             except ldap.ALREADY_EXISTS as e:
                 logger.info("Группа рассылки '%s' уже существует.", name)

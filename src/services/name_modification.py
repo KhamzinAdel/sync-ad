@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from common.constants import ABBREVIATIONS, GROUP_NAME
+from common.constants import ABBREVIATIONS, GROUP_NAME, FULL_PATH_AD
 
 
 class Base36TimeConverter:
@@ -49,54 +49,61 @@ class OUBuilder:
         )
 
     @classmethod
-    def build_ou_path(cls, full_name: str, parent_name: str) -> str:
+    def build_ou_path(cls, full_path: str, parent_name: str) -> str:
         """Формирует путь к OU"""
 
-        # Разделяем full_name на части и чистим от пробелов
-        name_parts = [part.strip() for part in full_name.split('/')]
+        if full_path in FULL_PATH_AD:
+            resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
+            full_path = f'OU={resolved_parent_name},' + full_path
 
-        resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
 
-        # allowed_name_parts = [cls._remove_unnecessary_char(name_part) for name_part in name_parts]
-
-        ou_parts = [f'OU={part}' for part in name_parts[1:-1]] + \
-                   [f'OU={resolved_parent_name}'] + [f'OU={name_parts[-1]}']
-
-        return ','.join(ou_parts)
+        # надо потом удалить
+        import config
+        f = ','.join(full_path.split(',')[:-3]) + ',' + config.settings.ldap.BASE_DN
+        return f
 
     @classmethod
     def truncate_name(cls, name: str, max_length: int = 64) -> str:
         """
         Сокращает имя до максимальной длины, сохраняя осмысленность.
-        Сначала применяет стандартные сокращения, затем, если необходимо, удаляем слова в конце.
-        Удаляет специальные символы
+
+        Процесс сокращения происходит в несколько этапов:
+        1. Удаление ненужных символов
+        2. Замена слов на стандартные сокращения
+        3. Постепенное удаление слов с конца
+        4. Удаление предлога в конце, если он остался
         """
 
-        resolved_name = cls._remove_unnecessary_char(name)
+        # Стандартные сокращения и предлоги
+        PREPOSITIONS = {'в', 'на', 'по', 'за', 'под', 'с', 'из', 'у', 'о', 'об', 'от', 'до', 'и'}
 
+        # Этап 1: Удаление ненужных символов
+        resolved_name = cls._remove_unnecessary_char(name)
         if len(resolved_name) <= max_length:
             return resolved_name
 
+        # Этап 2: Применение стандартных сокращений
         words = resolved_name.split()
-        result_words = []
+        processed_words = []
 
         for word in words:
             lower_word = word.lower()
-            if lower_word in ABBREVIATIONS:
-                if word.istitle():
-                    result_words.append(ABBREVIATIONS[lower_word].capitalize())
-                else:
-                    result_words.append(ABBREVIATIONS[lower_word].lower())
-            else:
-                result_words.append(word)
+            replacement = ABBREVIATIONS.get(lower_word, word)
+            if word.istitle():
+                replacement = replacement.capitalize()
+            processed_words.append(replacement)
 
-        shortened_name = ' '.join(result_words)
-
+        # Проверка длины после сокращений
+        shortened_name = ' '.join(processed_words)
         if len(shortened_name) <= max_length:
             return shortened_name
 
-        while len(shortened_name) > max_length and result_words:
-            result_words.pop()
-            shortened_name = ' '.join(result_words)
+        # Этап 3: Удаление слов с конца пока не достигнем нужной длины
+        while processed_words and len(' '.join(processed_words)) > max_length:
+            processed_words.pop()
 
-        return shortened_name
+        # Этап 4: Удаление предлога в конце, если он остался
+        if processed_words and processed_words[-1].lower() in PREPOSITIONS:
+            processed_words.pop()
+
+        return ' '.join(processed_words) if processed_words else ''

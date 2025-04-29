@@ -30,7 +30,8 @@ class ADRepository(AbstractADRepository):
         """
         Создаем OU (Организационную единицу) в Active Directory
         """
-        dn = f"OU={ou_name},{ou_path},{settings.ldap.BASE_DN}"
+
+        dn = f"OU={ou_name},{ou_path}"
         attrs = {
             'objectClass': [b'top', b'organizationalUnit'],
             'OU': [ou_name.encode('utf-8')]
@@ -45,7 +46,7 @@ class ADRepository(AbstractADRepository):
                 return ADSchema(name=ou_name)
 
             except ldap.NO_SUCH_OBJECT as e:
-                logger.info("Указанный путь %s не существует: %s", ou_path, e)
+                logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
             except ldap.ALREADY_EXISTS as e:
                 logger.info("Организационная единица '%s' уже существует.", ou_name)

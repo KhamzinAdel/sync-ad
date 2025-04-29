@@ -13,6 +13,10 @@ def sync_organizations_with_ad() -> None:
 
     organizations = organization_service.get_ou_to_active_directory()
 
+    if not organizations:
+        logger.info('Организации не получены с AD')
+        return
+
     for organization in organizations:
         active_directory_service.create_uo_and_group(
             ou_name=organization.name,

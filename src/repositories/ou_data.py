@@ -22,25 +22,33 @@ class OrganizationUnitRepository(AbstractOrganizationUnitRepository):
     """Репозиторий для работы с подразделениями"""
 
     def get_ou(self) -> list[OrganizationUnitSchema]:
-        sql = text("""
-                SELECT 
-                    office_id, 
-                    (SELECT MAX(to_char(datestart,'dd.mm.rrrr')) 
-                     FROM office 
-                     WHERE cod=office_mail.office_id) start_date, 
-                    (SELECT MAX(name) 
-                     FROM STAFF$DB.OFFICE_GROUP 
-                     WHERE id = office_mail.new_group) group_name, 
-                    office_mail.new_name,
-                    office_mail.p_date_create,
-                    get_full_officename(office_mail.office_id) full_name 
-                FROM office_mail 
-                WHERE to_date(office_mail.p_date_create,'dd.mm.rrrr') >= to_date(sysdate-90,'dd.mm.rrrr')
-                """)
-
+        stmt = text(
+            """
+            SELECT 
+                om.office_id,
+                (SELECT MAX(name) 
+                 FROM STAFF$DB.OFFICE_GROUP 
+                 WHERE id = om.new_group) group_name,
+                om.new_name,
+                om.p_date_create,
+                org.NAME as full_path
+            FROM 
+                office_mail om
+            JOIN 
+                STAFF$DB.OFFICE off ON om.office_id = off.cod
+            JOIN 
+                STAFF$DB.OFFICE_AD oa ON oa.office_id = off.parent_cod
+            JOIN 
+                STAFF$DB.AD_ORGANIZATIONS org ON oa.AD_GUID = org.ID
+            WHERE 
+                TO_DATE(om.p_date_create, 'dd.mm.rrrr') >= TO_DATE(SYSDATE-1000, 'dd.mm.rrrr')
+            ORDER BY 
+                om.office_id
+            """
+        )
         with Session() as session:
             try:
-                results = session.execute(sql)
+                results = session.execute(stmt)
                 logger.info('Получен список подразделений из базы данных')
                 return [
                     OrganizationUnitSchema(
@@ -48,7 +56,7 @@ class OrganizationUnitRepository(AbstractOrganizationUnitRepository):
                         parent_name=result.group_name.strip() if result.group_name else None,
                         name=result.new_name,
                         data_create=result.p_date_create if result.p_date_create else None,
-                        full_name=result.full_name,
+                        full_path=result.full_path,
                     )
                     for result in results
                 ]
