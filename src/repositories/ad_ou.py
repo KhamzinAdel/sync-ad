@@ -51,7 +51,7 @@ class ADRepository(AbstractADRepository):
             return ADSchema(name=ou_name)
 
         except ldap.NO_SUCH_OBJECT as e:
-            logger.info("Указанный путь %s не существует: %s", ou_path, e)
+            logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
         except ldap.ALREADY_EXISTS as e:
             logger.info("Организационная единица '%s' уже существует.", ou_name)

@@ -62,7 +62,7 @@ class ADGroupRepository(AbstractADGroupRepository):
             return ADGroupSchema(name=name)
 
         except ldap.NO_SUCH_OBJECT as e:
-            logger.info("Указанный путь %s не существует: %s", ou_path, e)
+            logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
         except ldap.ALREADY_EXISTS as e:
             logger.info("Группа доступа '%s' уже существует.", name)
@@ -101,7 +101,7 @@ class ADGroupRepository(AbstractADGroupRepository):
             return ADGroupSchema(name=name)
 
         except ldap.NO_SUCH_OBJECT as e:
-            logger.info("Указанный путь %s не существует: %s", ou_path, e)
+            logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
         except ldap.ALREADY_EXISTS as e:
             logger.info("Группа рассылки '%s' уже существует.", name)
