@@ -54,7 +54,7 @@ class OrganizationUnitRepository(AbstractOrganizationUnitRepository):
                     OrganizationUnitSchema(
                         id=result.office_id,
                         parent_name=result.group_name.strip() if result.group_name else None,
-                        name=result.new_name,
+                        name=result.new_name.strip(),
                         data_create=result.p_date_create if result.p_date_create else None,
                         full_path=result.full_path,
                     )
