@@ -64,7 +64,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         except ldap.NO_SUCH_OBJECT as e:
             logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
-        except ldap.ALREADY_EXISTS as e:
+        except ldap.ALREADY_EXISTS:
             logger.info("Группа доступа '%s' уже существует.", name)
 
         except ldap.LDAPError as e:
@@ -103,7 +103,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         except ldap.NO_SUCH_OBJECT as e:
             logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
-        except ldap.ALREADY_EXISTS as e:
+        except ldap.ALREADY_EXISTS:
             logger.info("Группа рассылки '%s' уже существует.", name)
 
         except ldap.LDAPError as e:
