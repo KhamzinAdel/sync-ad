@@ -58,8 +58,14 @@ class OUBuilder:
 
         # надо потом удалить просто return full_path
         import config
-        f = ','.join(full_path.split(',')[:-3]) + ',' + config.settings.ldap.BASE_DN
-        return f
+        f = ','.join(full_path.split(',')[:-4]) + ',' + config.settings.ldap.BASE_DN
+
+        if f in FULL_PATH_AD:
+            resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
+            f = f'OU={resolved_parent_name},' + f
+
+        f_result = ','.join(f.split(',')[:-3]) + ',dc=stud,dc=local'
+        return f_result
 
     @classmethod
     def truncate_name(cls, name: str, max_length: int = 64) -> str:
