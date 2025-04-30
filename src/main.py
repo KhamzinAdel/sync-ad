@@ -15,22 +15,21 @@ def sync_organizations_with_ad() -> None:
 
     organizations = organization_service.get_ou_to_active_directory()
 
-    if organizations:
-        with LdapConnection() as conn:
-            active_directory_service.active_directory.set_connection(conn)
-            active_directory_service.active_directory_group.set_connection(conn)
+    if not organizations:
+        logger.info('Организации не получены с AD')
 
-            for organization in organizations:
-                active_directory_service.create_uo_and_group(
-                    ou_name=organization.name,
-                    ou_path=organization.ou_path,
-                    base_code=organization.base_code,
-                )
+    with LdapConnection() as conn:
+        active_directory_service.active_directory.set_connection(conn)
+        active_directory_service.active_directory_group.set_connection(conn)
 
-        logger.info('Организации cинхронизированы с AD')
-        return
+        for organization in organizations:
+            active_directory_service.create_uo_and_group(
+                ou_name=organization.name,
+                ou_path=organization.ou_path,
+                base_code=organization.base_code,
+            )
 
-    logger.info('Организации не получены с AD')
+    logger.info('Организации cинхронизированы с AD')
 
 
 if __name__ == '__main__':
