@@ -4,31 +4,31 @@ from typing import Optional
 from common.constants import ABBREVIATIONS, GROUP_NAME, FULL_PATH_AD
 
 
-class Base36TimeConverter:
-    """Кодирование и декодирование времени в формате base36."""
+class Base62TimeConverter:
+    """Кодирование и декодирование времени в формате base63."""
 
-    _DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz'
+    _DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
     @classmethod
-    def to_base_36(cls, dt: Optional[datetime] = None) -> str:
-        """Конвертирует время в количество часов с Unix эпохи и кодирует в base36."""
+    def to_base62(cls, dt: Optional[datetime] = None) -> str:
+        """Конвертирует время в количество часов с Unix эпохи и кодирует в base62."""
 
-        result = ''
         timestamp = dt.timestamp() if dt else datetime.now().timestamp()
-
         ts = int(timestamp // 3600)
 
-        while ts:
-            ts, r = divmod(ts, 36)
-            result = cls._DIGITS[r] + result
-
-        return result or '0'
+        result = []
+        while ts > 0:
+            ts, rem = divmod(ts, 62)
+            result.append(cls._DIGITS[rem])
+        return ''.join(reversed(result)) or '0'
 
     @classmethod
-    def from_base_36(cls, base36_str: str) -> datetime:
-        """Декодирует base36 строку обратно в datetime"""
+    def from_base62(cls, base62_str: str) -> datetime:
+        """Декодирует base62 строку обратно в datetime."""
 
-        hours = int(base36_str, 36)
+        hours = 0
+        for char in base62_str:
+            hours = hours * 62 + cls._DIGITS.index(char)
         return datetime.fromtimestamp(hours * 3600)
 
 
