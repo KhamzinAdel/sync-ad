@@ -17,8 +17,11 @@ class OrganizationUnitService:
         if organization_units:
             return [
                 OrganizationUnitADSchema(
-                    name=ou.name,
+                    name=ou.name.strip(),
                     base_code=Base62TimeConverter.to_base62(ou.data_create),
-                    ou_path=OUBuilder.build_ou_path(ou.full_path, ou.parent_name),
+                    ou_path=OUBuilder.build_ou_path(
+                        ou.full_path,
+                        ou.parent_name.strip(),
+                    ),
                 ) for ou in organization_units
             ]
