@@ -2,7 +2,7 @@ import logging
 
 from repositories import OrganizationUnitRepository
 from entities.schemas import OrganizationUnitADSchema
-from .name_modification import Base62TimeConverter, OUBuilder
+from utils import Base62TimeConverter, OUBuilder
 
 logger = logging.getLogger(__name__)
 

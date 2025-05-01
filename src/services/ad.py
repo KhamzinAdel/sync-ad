@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from repositories import ADRepository, ADGroupRepository
-from .name_modification import OUBuilder
+from utils import OUBuilder
 
 
 logger = logging.getLogger(__name__)
