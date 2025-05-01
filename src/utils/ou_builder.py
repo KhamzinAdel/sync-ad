@@ -1,35 +1,8 @@
-from datetime import datetime
-from typing import Optional
-
-from common.constants import ABBREVIATIONS, GROUP_NAME, FULL_PATH_AD
-
-
-class Base62TimeConverter:
-    """Кодирование и декодирование времени в формате base63."""
-
-    _DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-
-    @classmethod
-    def to_base62(cls, dt: Optional[datetime] = None) -> str:
-        """Конвертирует время в количество часов с Unix эпохи и кодирует в base62."""
-
-        timestamp = dt.timestamp() if dt else datetime.now().timestamp()
-        ts = int(timestamp // 3600)
-
-        result = []
-        while ts > 0:
-            ts, rem = divmod(ts, 62)
-            result.append(cls._DIGITS[rem])
-        return ''.join(reversed(result)) or '0'
-
-    @classmethod
-    def from_base62(cls, base62_str: str) -> datetime:
-        """Декодирует base62 строку обратно в datetime."""
-
-        hours = 0
-        for char in base62_str:
-            hours = hours * 62 + cls._DIGITS.index(char)
-        return datetime.fromtimestamp(hours * 3600)
+from common.constants import (
+    ABBREVIATIONS,
+    GROUP_NAME,
+    FULL_PATH_AD,
+)
 
 
 class OUBuilder:
@@ -58,15 +31,8 @@ class OUBuilder:
 
         # надо потом удалить просто return full_path
         import config
-        f = ','.join(full_path.split(',')[:-4]) + ',' + config.settings.ldap.BASE_DN
-
-        if f in FULL_PATH_AD:
-            resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
-            f = f'OU={resolved_parent_name},' + f
-
-        f_result = ','.join(i for i in f.split(',')[:-3]) + ',dc=stud,dc=local'
-
-        return f_result
+        f = ','.join(full_path.split(',')[:-3]) + ',' + config.settings.ldap.BASE_DN
+        return f
 
     @classmethod
     def truncate_name(cls, name: str, max_length: int = 64) -> str:
@@ -113,4 +79,3 @@ class OUBuilder:
             processed_words.pop()
 
         return ' '.join(processed_words) if processed_words else ''
-
