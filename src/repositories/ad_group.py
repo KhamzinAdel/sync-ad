@@ -22,6 +22,10 @@ class AbstractADGroupRepository(ABC):
     def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
         raise NotImplementedError
 
+    @abstractmethod
+    def delete_group(self, ou_dn: str) -> bool:
+        raise NotImplementedError
+
 
 class ADGroupRepository(AbstractADGroupRepository):
     """
@@ -104,6 +108,25 @@ class ADGroupRepository(AbstractADGroupRepository):
 
             except ldap.LDAPError as e:
                 logger.error("Ошибка при создании группы рассылки: %s", e)
+
+    def delete_group(self, group_dn: str) -> bool:
+        """
+        Удаляет группу из Active Directory.
+        """
+
+        with LdapConnection() as conn:
+            try:
+                conn.delete_s(group_dn)
+                logger.info(f"Группа '{group_dn}' успешно удалена.")
+                return True
+
+            except ldap.NO_SUCH_OBJECT:
+                logger.warning(f"Группа '{group_dn}' не найдена.")
+                return False
+
+            except ldap.LDAPError as e:
+                logger.error(f"Ошибка при удалении группы '{group_dn}': {e}")
+                return False
 
     def _get_group_type_value(self, group_scope: GroupScope, group_type: GroupType) -> int:
         """

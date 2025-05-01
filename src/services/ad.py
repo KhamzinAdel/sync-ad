@@ -57,7 +57,7 @@ class ActiveDirectoryService:
             logger.warning('Не удалось создать группу рассылки: %s', group_name)
             return
 
-        logger.info("Группа рассылки '%s' успешно создана.", group_name.name)
+        logger.info("Группа рассылки '%s' успешно создана.", group.name)
 
         return group.name
 
@@ -95,19 +95,21 @@ class ActiveDirectoryService:
 
 
 def main():
-    import time
-    start_time = time.time()
-    ad_service = ActiveDirectoryService()
-    ou_path = "OU=Университет"
-    base_name = "Подразделение_"
-    for i in range(1, 1000):
-        ou_name = f"{base_name}{i}"
-        create_ou = ad_service.create_uo_and_group(ou_name, ou_path)
-        print(f"Создано подразделение {ou_name}: {create_ou}")
+    #import time
+    #start_time = time.time()
+    #ad_service = ActiveDirectoryService()
+    #ou_path = "OU=Университет"
+    #base_name = "Подразделение_"
+    #for i in range(1, 1000):
+    #    ou_name = f"{base_name}{i}"
+    #    create_ou = ad_service.create_uo_and_group(ou_name, ou_path)
+    #    print(f"Создано подразделение {ou_name}: {create_ou}")
 
-    end_time = time.time()
-    total_time = end_time - start_time
-    print(f"Общее время выполнения: {total_time:.2f} секунд")
+    #end_time = time.time()
+    #total_time = end_time - start_time
+    #print(f"Общее время выполнения: {total_time:.2f} секунд")
+
+    ad_service = ActiveDirectoryService()
 
 
 if __name__ == '__main__':
