@@ -55,7 +55,6 @@ class ADGroupRepository(AbstractADGroupRepository):
         with LdapConnection() as conn:
             try:
                 conn.add_s(dn, ldif)
-                logger.info("Группа доступа '%s' успешно создана.", name)
                 return ADGroupSchema(name=name)
 
             except ldap.NO_SUCH_OBJECT as e:
@@ -95,7 +94,6 @@ class ADGroupRepository(AbstractADGroupRepository):
         with LdapConnection() as conn:
             try:
                 conn.add_s(dn, ldif)
-                logger.info("Группа рассылки '%s' успешно создана.", name)
                 return ADGroupSchema(name=name)
 
             except ldap.NO_SUCH_OBJECT as e:

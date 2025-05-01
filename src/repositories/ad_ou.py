@@ -42,7 +42,6 @@ class ADRepository(AbstractADRepository):
 
             try:
                 conn.add_s(dn, ldif)
-                logger.info("Организационная единица '%s' успешно создана.", ou_name)
                 return ADSchema(name=ou_name)
 
             except ldap.NO_SUCH_OBJECT as e:

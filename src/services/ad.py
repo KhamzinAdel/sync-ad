@@ -25,6 +25,8 @@ class ActiveDirectoryService:
             logger.error('Не удалось создать организационную единицу: %s', ou_name)
             return
 
+        logger.info("Организационная единица '%s' успешно создана.", ou_organization.name)
+
         return ou_organization.name
 
     def _create_access_group(self, group_name: str, ou_path: str, base_code: str) -> Optional[str]:
@@ -39,6 +41,8 @@ class ActiveDirectoryService:
             logger.warning(f'Не удалось создать группу доступа: {group_name}')
             return
 
+        logger.info("Группа доступа '%s' успешно создана.", group.name)
+
         return group.name
 
     def _create_mailing_group(self, group_name: str, ou_path: str, base_code: str) -> Optional[str]:
@@ -52,6 +56,8 @@ class ActiveDirectoryService:
         if not group:
             logger.warning('Не удалось создать группу рассылки: %s', group_name)
             return
+
+        logger.info("Группа рассылки '%s' успешно создана.", group_name.name)
 
         return group.name
 
