@@ -23,7 +23,7 @@ class ActiveDirectoryService:
 
         if not ou_organization:
             logger.error('Не удалось создать организационную единицу: %s', ou_name)
-            return None
+            return
 
         return ou_organization.name
 
@@ -37,7 +37,7 @@ class ActiveDirectoryService:
 
         if not group:
             logger.warning(f'Не удалось создать группу доступа: {group_name}')
-            return None
+            return
 
         return group.name
 
@@ -51,7 +51,7 @@ class ActiveDirectoryService:
 
         if not group:
             logger.warning('Не удалось создать группу рассылки: %s', group_name)
-            return None
+            return
 
         return group.name
 
