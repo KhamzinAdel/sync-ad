@@ -51,7 +51,7 @@ class ActiveDirectoryService:
 
         if not group:
             logger.warning('Не удалось создать группу рассылки: %s', group_name)
-            return None
+            return
 
         return group.name
 
