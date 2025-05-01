@@ -23,7 +23,7 @@ class ActiveDirectoryService:
 
         if not ou_organization:
             logger.error('Не удалось создать организационную единицу: %s', ou_name)
-            return None
+            return
 
         return ou_organization.name
 
@@ -37,7 +37,7 @@ class ActiveDirectoryService:
 
         if not group:
             logger.warning(f'Не удалось создать группу доступа: {group_name}')
-            return None
+            return
 
         return group.name
 
@@ -64,7 +64,7 @@ class ActiveDirectoryService:
         ou_organization_name = self._create_ou(ou_name, ou_path)
 
         if not ou_organization_name:
-            return None
+            return
 
         group_access = self._create_access_group(ou_name, f'OU={ou_organization_name},{ou_path}', base_code)
 
