@@ -14,7 +14,7 @@ class ActiveDirectoryService:
         self.active_directory_group: ADGroupRepository = ADGroupRepository()
 
     def _create_ou(self, ou_name: str, ou_path: str) -> Optional[str]:
-        update_ou_name = OUBuilder.truncate_name(ou_name)
+        update_ou_name = OUBuilder.truncate_name(ou_name, 64)
 
         ou_organization = self.active_directory.create_ou(
             ou_name=update_ou_name,
