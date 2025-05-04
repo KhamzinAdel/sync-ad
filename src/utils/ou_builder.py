@@ -46,15 +46,12 @@ class OUBuilder:
         4. Удаление предлога в конце, если он остался
         """
 
-        # Стандартные сокращения и предлоги
         PREPOSITIONS = {'в', 'на', 'по', 'за', 'под', 'с', 'из', 'у', 'о', 'об', 'от', 'до', 'и'}
 
-        # Этап 1: Удаление ненужных символов
         resolved_name = cls._remove_unnecessary_char(name)
         if len(resolved_name) <= max_length:
             return resolved_name
 
-        # Этап 2: Применение стандартных сокращений
         words = resolved_name.split()
         processed_words = []
 
@@ -65,16 +62,13 @@ class OUBuilder:
                 replacement = replacement.capitalize()
             processed_words.append(replacement)
 
-        # Проверка длины после сокращений
         shortened_name = ' '.join(processed_words)
         if len(shortened_name) <= max_length:
             return shortened_name
 
-        # Этап 3: Удаление слов с конца пока не достигнем нужной длины
         while processed_words and len(' '.join(processed_words)) > max_length:
             processed_words.pop()
 
-        # Этап 4: Удаление предлога в конце, если он остался
         if processed_words and processed_words[-1].lower() in PREPOSITIONS:
             processed_words.pop()
 

@@ -51,7 +51,7 @@ class ADRepository(AbstractADRepository):
                 logger.warning("Указанный путь %s не существует: %s", ou_path, e)
 
             except ldap.ALREADY_EXISTS:
-                logger.info("Организационная единица '%s' уже существует.", ou_name)
+                logger.warning("Организационная единица '%s' уже существует.", ou_name)
 
             except ldap.LDAPError as e:
                 logger.error("Ошибка при создании OU: %s", e)

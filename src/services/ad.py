@@ -25,7 +25,8 @@ class ActiveDirectoryService:
             logger.error('Не удалось создать организационную единицу: %s', ou_name)
             return
 
-        logger.info("Организационная единица '%s' успешно создана.", ou_organization.name)
+        logger.info("Организационная единица '%s' (путь: '%s') успешно создана.",
+                    ou_organization.name, ou_path)
 
         return ou_organization.name
 
