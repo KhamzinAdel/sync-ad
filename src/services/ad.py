@@ -25,7 +25,8 @@ class ActiveDirectoryService:
             logger.error('Не удалось создать организационную единицу: %s', ou_name)
             return
 
-        logger.info("Организационная единица '%s' успешно создана.", ou_organization.name)
+        logger.info("Организационная единица '%s' (путь: '%s') успешно создана.",
+                    ou_organization.name, ou_path)
 
         return ou_organization.name
 
@@ -92,23 +93,3 @@ class ActiveDirectoryService:
         )
 
         return ou_organization_name
-
-
-def main():
-    import time
-    start_time = time.time()
-    ad_service = ActiveDirectoryService()
-    ou_path = "OU=Университет"
-    base_name = "Подразделение_"
-    for i in range(1, 1000):
-        ou_name = f"{base_name}{i}"
-        create_ou = ad_service.create_uo_and_group(ou_name, ou_path)
-        print(f"Создано подразделение {ou_name}: {create_ou}")
-
-    end_time = time.time()
-    total_time = end_time - start_time
-    print(f"Общее время выполнения: {total_time:.2f} секунд")
-
-
-if __name__ == '__main__':
-    main()
