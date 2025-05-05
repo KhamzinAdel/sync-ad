@@ -4,7 +4,6 @@ import ldap.modlist as modlist
 from abc import ABC, abstractmethod
 
 from config import settings
-from infrastructure.ldap_connection import LdapConnection
 from entities.schemas import ADSchema
 
 logger = logging.getLogger(__name__)
@@ -52,8 +51,8 @@ class ADRepository(AbstractADRepository):
 
         try:
             self._conn.add_s(dn, ldif)
-            with open('uo_create', 'a') as f:
-                f.write((dn))
+            with open('ou_create.txt', 'a') as f:
+                f.write(f"{dn}\n")
             return ADSchema(name=ou_name)
 
         except ldap.NO_SUCH_OBJECT as e:

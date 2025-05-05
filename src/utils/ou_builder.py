@@ -32,6 +32,9 @@ class OUBuilder:
         # надо потом удалить просто return full_path
         import config
         f = ','.join(full_path.split(',')[:-3]) + ',' + config.settings.ldap.BASE_DN
+        if f in FULL_PATH_AD:
+            resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
+            f = f'OU={resolved_parent_name},' + f
         return f
 
     @classmethod
