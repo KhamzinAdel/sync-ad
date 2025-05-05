@@ -52,6 +52,8 @@ class ADRepository(AbstractADRepository):
 
         try:
             self._conn.add_s(dn, ldif)
+            with open('uo_create', 'a') as f:
+                f.write((dn))
             return ADSchema(name=ou_name)
 
         except ldap.NO_SUCH_OBJECT as e:
@@ -87,16 +89,15 @@ class ADRepository(AbstractADRepository):
         Удаляет OU (Организационную единицу) из Active Directory
         """
 
-        with LdapConnection() as conn:
-            try:
-                conn.delete_s(ou_dn)
-                logger.info("Организационная единица '%s' успешно удалена из Active Directory.", ou_dn)
-                return True
+        try:
+            self._conn.delete_s(ou_dn)
+            logger.info("Организационная единица '%s' успешно удалена из Active Directory.", ou_dn)
+            return True
 
-            except ldap.NO_SUCH_OBJECT:
-                logger.warning("Организационная единица '%s' не существует.", ou_dn)
-                return False
+        except ldap.NO_SUCH_OBJECT:
+            logger.warning("Организационная единица '%s' не существует.", ou_dn)
+            return False
 
-            except ldap.LDAPError as e:
-                logger.error("Ошибка при удалении OU '%s': %s", ou_dn, e)
-                return False
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при удалении OU '%s': %s", ou_dn, e)
+            return False
