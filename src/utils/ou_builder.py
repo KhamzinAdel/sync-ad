@@ -29,10 +29,7 @@ class OUBuilder:
             resolved_parent_name = GROUP_NAME.get(parent_name, parent_name)
             full_path = f'OU={resolved_parent_name},' + full_path
 
-        # надо потом удалить просто return full_path
-        import config
-        f = ','.join(full_path.split(',')[:-3]) + ',' + config.settings.ldap.BASE_DN
-        return f
+        return full_path
 
     @classmethod
     def truncate_name(cls, name: str, max_length: int = 64) -> str:
