@@ -101,6 +101,8 @@ class ADGroupRepository(AbstractADGroupRepository):
 
         try:
             self._conn.add_s(dn, ldif)
+            with open('ou_group_create.txt', 'a') as f:
+                f.write(f"{dn}\n")
             return ADGroupSchema(name=name)
 
         except ldap.NO_SUCH_OBJECT as e:
