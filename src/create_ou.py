@@ -35,7 +35,7 @@ def read_and_create_ous():
             if line.startswith("OU="):
                 ou_path = line.strip()
                 ou_name = ou_path.split(",")[0].split("=")[1]
-                parent_path = ",".join(ou_path.split(",")[1:-3]) + ',' + settings.ldap.BASE_DN
+                parent_path = ",".join(ou_path.split(",")[1:-3]) + ',' + 'dc=stud,dc=local'
                 with LdapConnection() as conn:
                     try:
                         ad_rep.set_connection(conn)
@@ -139,6 +139,6 @@ def delete_ou():
 
 
 if __name__ == '__main__':
-    read_and_create_ous() # Создание подразделений
+    # read_and_create_ous() # Создание подразделений
     # read_and_create_groups()  # Создание групп
-    # delete_ou() # Удаление подразделений
+    delete_ou() # Удаление подразделений
