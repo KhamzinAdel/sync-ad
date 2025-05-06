@@ -137,8 +137,29 @@ def delete_ou():
                     logger.error("Ошибка при удалении OU '%s': %s", ou_dn, e)
 
 
+def delete_group():
+    with open('ou_group_create.txt', 'r', encoding='utf-8') as file:
+        with LdapConnection() as conn:
+            for line in file:
+                ou_dn = line.strip()
+
+                if not ou_dn:
+                    continue
+
+                try:
+                    conn.delete_s(ou_dn)
+                    logger.info("Группа '%s' успешно удалена из Active Directory.", ou_dn)
+
+                except ldap.NO_SUCH_OBJECT:
+                    logger.warning("Группа '%s' не существует.", ou_dn)
+
+                except ldap.LDAPError as e:
+                    logger.error("Ошибка при удалении группы'%s': %s", ou_dn, e)
+
+
 
 if __name__ == '__main__':
     # read_and_create_ous() # Создание подразделений
     # read_and_create_groups()  # Создание групп
-    delete_ou() # Удаление подразделений
+    # delete_ou() # Удаление подразделений
+    delete_group()
