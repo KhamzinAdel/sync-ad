@@ -1,6 +1,6 @@
 import logging
 from infrastructure.logger import configure_logging
-from services import OrganizationUnitService, ActiveDirectoryService
+from services import OrganizationUnitService, ADService, AdGroupService
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +9,8 @@ def sync_organizations_with_ad() -> None:
     """Вызов функции создания OU и групп"""
 
     organization_service: OrganizationUnitService = OrganizationUnitService()
-    active_directory_service: ActiveDirectoryService = ActiveDirectoryService()
+    ad_service: ADService = ADService()
+    ad_group_service: AdGroupService = AdGroupService()
 
     organizations = organization_service.get_ou_to_active_directory()
 
@@ -18,11 +19,16 @@ def sync_organizations_with_ad() -> None:
         return
 
     for organization in organizations:
-        active_directory_service.create_uo_and_group(
+        ou_ad = ad_service.create_ou(
             ou_name=organization.name,
             ou_path=organization.ou_path,
-            base_code=organization.base_code,
         )
+        if ou_ad:
+            ad_group_service.create_all_group(
+                group_name=ou_ad.ou_name,
+                group_path=ou_ad.ou_path,
+                base_code=organization.base_code,
+            )
 
     logger.info('Организации cинхронизированы с AD')
 

@@ -1,2 +1,3 @@
-from .ad import ActiveDirectoryService
+from .ad import ADService
+from .ad_group import AdGroupService
 from .ou_data import OrganizationUnitService

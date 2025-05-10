@@ -45,7 +45,7 @@ class ADRepository(AbstractADRepository):
         with LdapConnection() as conn:
             try:
                 conn.add_s(dn, ldif)
-                return ADSchema(name=ou_name)
+                return ADSchema(ou_name=ou_name, ou_path=ou_path)
 
             except ldap.NO_SUCH_OBJECT as e:
                 logger.warning("Указанный путь %s не существует: %s", ou_path, e)

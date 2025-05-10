@@ -3,4 +3,5 @@ from dataclasses import dataclass
 
 @dataclass
 class ADSchema:
-    name: str
+    ou_name: str
+    ou_path: str
