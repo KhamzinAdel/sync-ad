@@ -15,10 +15,10 @@ class AdGroupService:
     def _create_access_group(self, group_name: str, group_path: str, base_code: str) -> Optional[ADGroupSchema]:
         """Создание группы доступа."""
 
-        update_group_name = OUBuilder.truncate_name(group_name, 58) + '_' + base_code
+        truncate_group_name = OUBuilder.truncate_name(group_name, 58) + '_' + base_code
 
         group = self.ad_group_repository.create_access_group(
-            group_name=update_group_name,
+            group_name=truncate_group_name,
             group_path=group_path,
         )
 
@@ -33,10 +33,10 @@ class AdGroupService:
     def _create_mailing_group(self, group_name: str, group_path: str, base_code: str) -> Optional[ADGroupSchema]:
         """Создание группы рассылки."""
 
-        update_group_name = OUBuilder.truncate_name(group_name, 57) + '_' + base_code
+        truncate_group_name = OUBuilder.truncate_name(group_name, 57) + '_' + base_code
 
         group = self.ad_group_repository.create_mailing_group(
-            group_name=update_group_name,
+            group_name=truncate_group_name,
             group_path=group_path,
         )
 

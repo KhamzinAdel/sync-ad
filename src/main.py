@@ -1,6 +1,6 @@
 import logging
 from infrastructure.logger import configure_logging
-from services import OrganizationUnitService, ADService, AdGroupService
+from services import OrganizationUnitDataService, ADService, AdGroupService
 
 logger = logging.getLogger(__name__)
 
@@ -8,11 +8,11 @@ logger = logging.getLogger(__name__)
 def sync_organizations_with_ad() -> None:
     """Вызов функции создания OU и групп"""
 
-    organization_service: OrganizationUnitService = OrganizationUnitService()
+    organization_service: OrganizationUnitDataService = OrganizationUnitDataService()
     ad_service: ADService = ADService()
     ad_group_service: AdGroupService = AdGroupService()
 
-    organizations = organization_service.get_ou_to_active_directory()
+    organizations = organization_service.get_organizations()
 
     if not organizations:
         logger.info('Организации не получены с AD')
