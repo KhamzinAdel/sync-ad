@@ -164,11 +164,6 @@ class ADGroupRepository(AbstractADGroupRepository):
                 ]
 
                 conn.modify_s(parent_group, mod_attrs)
-                logger.info(
-                    "Группа %s успешно добавлена в родительскую группу %s",
-                    child_group_dn, child_group_dn
-                )
-
             except ldap.TYPE_OR_VALUE_EXISTS:
                 logger.warning("Группа %s уже является членом %s", child_group_dn, parent_group)
 

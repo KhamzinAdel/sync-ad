@@ -5,7 +5,6 @@ from repositories import ADGroupRepository
 from entities.schemas import ADGroupSchema
 from utils import OUBuilder
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +30,7 @@ class AdGroupService:
 
         return group
 
-    def _create_mailing_group(self, group_name: str, group_path: str, base_code: str) -> ADGroupSchema:
+    def _create_mailing_group(self, group_name: str, group_path: str, base_code: str) -> Optional[ADGroupSchema]:
         """Создание группы рассылки."""
 
         update_group_name = OUBuilder.truncate_name(group_name, 57) + '_' + base_code
@@ -74,6 +73,18 @@ class AdGroupService:
 
         return result
 
+    def _add_child_group_to_parent_group(self, parent_group_dn: str, child_group_dn: ADGroupSchema) -> None:
+        """Добавление группы в группу родителя"""
+
+        if parent_group_dn and child_group_dn:
+            self.ad_group_repository.add_child_group_to_parent_group(
+                parent_group_dn, child_group_dn.group_dn
+            )
+            logger.info(
+                "Группа %s успешно добавлена в родительскую группу %s",
+                child_group_dn, child_group_dn
+            )
+
     def create_all_group(self, group_name: str, group_path: str, base_code: str) -> Optional[str]:
         """Основной метод по созданию групп"""
 
@@ -85,11 +96,11 @@ class AdGroupService:
 
         if group_parent_dn:
             if group_parent_dn['parent_access_group']:
-                self.ad_group_repository.add_child_group_to_parent_group(
-                    group_parent_dn['parent_access_group'], group_access.group_dn
+                self._add_child_group_to_parent_group(
+                    group_parent_dn['parent_access_group'], group_access
                 )
 
             if group_parent_dn['parent_mailing_group']:
-                self.ad_group_repository.add_child_group_to_parent_group(
-                    group_parent_dn['parent_mailing_group'], group_mailing.group_dn
+                self._add_child_group_to_parent_group(
+                    group_parent_dn['parent_mailing_group'], group_mailing
                 )
