@@ -85,7 +85,7 @@ class AdGroupService:
                 child_group_dn, child_group_dn
             )
 
-    def create_all_group(self, group_name: str, group_path: str, base_code: str) -> Optional[str]:
+    def create_all_group(self, group_name: str, group_path: str, base_code: str) -> None:
         """Основной метод по созданию групп"""
 
         group_access = self._create_access_group(group_name, group_path, base_code)
