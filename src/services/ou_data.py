@@ -1,18 +1,18 @@
 import logging
 
-from repositories import OrganizationUnitRepository
+from repositories import OrganizationUnitDataRepository
 from entities.schemas import OrganizationUnitADSchema
 from utils import Base62TimeConverter, OUBuilder
 
 logger = logging.getLogger(__name__)
 
 
-class OrganizationUnitService:
+class OrganizationUnitDataService:
     def __init__(self):
-        self.organization_unit_repository: OrganizationUnitRepository = OrganizationUnitRepository()
+        self.organization_unit_data_repository: OrganizationUnitDataRepository = OrganizationUnitDataRepository()
 
-    def get_ou_to_active_directory(self) -> list[OrganizationUnitADSchema]:
-        organization_units = self.organization_unit_repository.get_ou()
+    def get_organizations(self) -> list[OrganizationUnitADSchema]:
+        organization_units = self.organization_unit_data_repository.get_organizations()
 
         if organization_units:
             return [

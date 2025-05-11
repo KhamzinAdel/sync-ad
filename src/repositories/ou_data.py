@@ -13,15 +13,15 @@ logger = logging.getLogger(__name__)
 class AbstractOrganizationUnitRepository(ABC):
 
     @abstractmethod
-    def get_ou(self) -> list[OrganizationUnitSchema]:
+    def get_organizations(self) -> list[OrganizationUnitSchema]:
         """Получает список подразделений"""
         raise NotImplementedError
 
 
-class OrganizationUnitRepository(AbstractOrganizationUnitRepository):
+class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
     """Репозиторий для работы с подразделениями"""
 
-    def get_ou(self) -> list[OrganizationUnitSchema]:
+    def get_organizations(self) -> list[OrganizationUnitSchema]:
         stmt = text(
             """
             SELECT 

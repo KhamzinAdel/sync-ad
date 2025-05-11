@@ -2,7 +2,7 @@ import logging
 
 from infrastructure.logger import configure_logging
 from infrastructure.ldap_connection import LdapConnection
-from services import OrganizationUnitService, ActiveDirectoryService
+from services import OrganizationUnitDataService, ADService, AdGroupService
 
 logger = logging.getLogger(__name__)
 
@@ -10,24 +10,30 @@ logger = logging.getLogger(__name__)
 def sync_organizations_with_ad() -> None:
     """Вызов функции создания OU и групп"""
 
-    organization_service: OrganizationUnitService = OrganizationUnitService()
-    active_directory_service: ActiveDirectoryService = ActiveDirectoryService()
+    organization_service: OrganizationUnitDataService = OrganizationUnitDataService()
+    ad_service: ADService = ADService()
+    ad_group_service: AdGroupService = AdGroupService()
 
-    organizations = organization_service.get_ou_to_active_directory()
+    organizations = organization_service.get_organizations()
 
     if not organizations:
         logger.info('Организации не получены с AD')
 
     with LdapConnection() as conn:
-        active_directory_service.active_directory.set_connection(conn)
-        active_directory_service.active_directory_group.set_connection(conn)
+        ad_service.ad_repository.set_connection(conn)
+        ad_group_service.ad_group_repository.set_connection(conn)
 
         for organization in organizations:
-            active_directory_service.create_uo_and_group(
+            ou_ad = ad_service.create_ou(
                 ou_name=organization.name,
                 ou_path=organization.ou_path,
-                base_code=organization.base_code,
             )
+            if ou_ad:
+                ad_group_service.create_all_group(
+                    group_name=ou_ad.ou_name,
+                    group_path=ou_ad.ou_path,
+                    base_code=organization.base_code,
+                )
 
     logger.info('Организации cинхронизированы с AD')
 

@@ -1,11 +1,11 @@
-import ldap
 import logging
-from ldap.modlist import addModlist
 from abc import ABC, abstractmethod
 
-from infrastructure.ldap_connection import LdapConnection
+import ldap
+from ldap.modlist import addModlist
+
 from entities.enums import GroupScope, GroupType
-from entities.schemas import ADGroupSchema
+from entities.schemas import ADGroupSchema, ADParentGroupSchema
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,14 @@ class AbstractADGroupRepository(ABC):
     def delete_group(self, ou_dn: str) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def search_parent_groups(self, parent_ou_dn: str) -> list:
+        raise NotImplementedError
+
+    @abstractmethod
+    def add_child_group_to_parent_group(self, parent_group: str, child_group_dn: str):
+        raise NotImplementedError
+
 
 class ADGroupRepository(AbstractADGroupRepository):
     """
@@ -37,7 +45,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         """Установить внешнее соединение"""
         self._conn = conn
 
-    def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_access_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         """
         Создает группу доступа.
         - Имя группы (name) начинается с подчеркивания.
@@ -49,7 +57,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = f'_{group_name}'
         sam_account_name = group_name
 
-        dn = f'CN={name},{ou_path}'
+        dn = f'CN={name},{group_path}'
 
         attrs = {
             'objectClass': [b'top', b'group'],
@@ -63,10 +71,10 @@ class ADGroupRepository(AbstractADGroupRepository):
 
         try:
             self._conn.add_s(dn, ldif)
-            return ADGroupSchema(name=name)
+            return ADGroupSchema(group_name=name, group_dn=dn)
 
         except ldap.NO_SUCH_OBJECT as e:
-            logger.warning("Указанный путь %s не существует: %s", ou_path, e)
+            logger.warning("Указанный путь %s не существует: %s", group_path, e)
 
         except ldap.ALREADY_EXISTS:
             logger.warning("Группа доступа '%s' уже существует.", name)
@@ -74,7 +82,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         except ldap.LDAPError as e:
             logger.error("Ошибка при создании группы доступа: %s", e)
 
-    def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_mailing_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         """
         Создает группу рассылки.
         - Имя группы (name) — простое.
@@ -86,7 +94,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         name = group_name
         sam_account_name = f'Р_{group_name}'
 
-        dn = f'CN={name},{ou_path}'
+        dn = f'CN={name},{group_path}'
 
         # Атрибуты группы
         attrs = {
@@ -101,12 +109,10 @@ class ADGroupRepository(AbstractADGroupRepository):
 
         try:
             self._conn.add_s(dn, ldif)
-            with open('ou_group_create.txt', 'a') as f:
-                f.write(f"{dn}\n")
-            return ADGroupSchema(name=name)
+            return ADGroupSchema(group_name=name, group_dn=dn)
 
         except ldap.NO_SUCH_OBJECT as e:
-            logger.warning("Указанный путь %s не существует: %s", ou_path, e)
+            logger.warning("Указанный путь %s не существует: %s", group_path, e)
 
         except ldap.ALREADY_EXISTS:
             logger.warning("Группа рассылки '%s' уже существует.", name)
@@ -119,19 +125,51 @@ class ADGroupRepository(AbstractADGroupRepository):
         Удаляет группу из Active Directory.
         """
 
-        with LdapConnection() as conn:
-            try:
-                conn.delete_s(group_dn)
-                logger.info(f"Группа '{group_dn}' успешно удалена.")
-                return True
+        try:
+            self._conn.delete_s(group_dn)
+            logger.info(f"Группа '{group_dn}' успешно удалена.")
+            return True
 
-            except ldap.NO_SUCH_OBJECT:
-                logger.warning(f"Группа '{group_dn}' не найдена.")
-                return False
+        except ldap.NO_SUCH_OBJECT:
+            logger.warning(f"Группа '{group_dn}' не найдена.")
+            return False
 
-            except ldap.LDAPError as e:
-                logger.error(f"Ошибка при удалении группы '{group_dn}': {e}")
-                return False
+        except ldap.LDAPError as e:
+            logger.error(f"Ошибка при удалении группы '{group_dn}': {e}")
+            return False
+
+    def search_parent_groups(self, parent_dn: str) -> ADParentGroupSchema:
+        """
+        Ищет все группы в указанной группе.
+        """
+        search_filter = '(objectClass=group)'
+
+        try:
+            result = self._conn.search_s(
+                parent_dn,
+                ldap.SCOPE_ONELEVEL,
+                search_filter,
+                ['distinguishedName'],
+            )
+            return ADParentGroupSchema(parent_groups_dn=result)
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при поиске групп в OU '%s': %s", parent_dn, e)
+
+    def add_child_group_to_parent_group(self, parent_group: str, child_group_dn: str):
+        """
+        Добавляет указанную группу (child_group_dn) в родительскую группу.
+        """
+        try:
+            mod_attrs = [
+                (ldap.MOD_ADD, 'member', [child_group_dn.encode('utf-8')])
+            ]
+
+            self._conn.modify_s(parent_group, mod_attrs)
+        except ldap.TYPE_OR_VALUE_EXISTS:
+            logger.warning("Группа %s уже является членом %s", child_group_dn, parent_group)
+
+        except ldap.LDAPError as e:
+            logger.error("Ошибка при добавлении группы в родительскую: %s", e)
 
     def _get_group_type_value(self, group_scope: GroupScope, group_type: GroupType) -> int:
         """
