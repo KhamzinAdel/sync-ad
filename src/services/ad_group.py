@@ -81,7 +81,7 @@ class AdGroupService:
                 parent_group_dn, child_group_dn.group_dn
             )
             logger.info(
-                "Группа %s успешно добавлена в родительскую группу %s",
+                "Группа %s успешно добавлена в родительскую группу: %s",
                 child_group_dn.group_name, parent_group_dn
             )
 
