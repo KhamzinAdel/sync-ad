@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 class AbstractADGroupRepository(ABC):
 
     @abstractmethod
-    def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_access_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         raise NotImplementedError
 
     @abstractmethod
-    def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_mailing_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         raise NotImplementedError
 
     @abstractmethod
@@ -26,7 +26,7 @@ class AbstractADGroupRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def search_parent_groups(self, parent_ou_dn: str) -> list:
+    def search_parent_groups(self, parent_dn: str) -> ADParentGroupSchema:
         raise NotImplementedError
 
     @abstractmethod
@@ -124,15 +124,15 @@ class ADGroupRepository(AbstractADGroupRepository):
         with LdapConnection() as conn:
             try:
                 conn.delete_s(group_dn)
-                logger.info(f"Группа '{group_dn}' успешно удалена.")
+                logger.info("Группа '%s' успешно удалена.", group_dn)
                 return True
 
             except ldap.NO_SUCH_OBJECT:
-                logger.warning(f"Группа '{group_dn}' не найдена.")
+                logger.warning("Группа '%s' не найдена.", group_dn)
                 return False
 
             except ldap.LDAPError as e:
-                logger.error(f"Ошибка при удалении группы '{group_dn}': {e}")
+                logger.error("Ошибка при удалении группы '%s': %s", group_dn, e)
                 return False
 
     def search_parent_groups(self, parent_dn: str) -> ADParentGroupSchema:

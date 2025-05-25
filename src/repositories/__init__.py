@@ -1,3 +1,3 @@
-from .ad_ou import ADRepository
-from .ad_group import ADGroupRepository
-from .ou_data import OrganizationUnitDataRepository
+from .ad_ou import AbstractADRepository, ADRepository
+from .ad_group import ADGroupRepository, AbstractADGroupRepository
+from .ou_data import AbstractOrganizationUnitRepository, OrganizationUnitDataRepository

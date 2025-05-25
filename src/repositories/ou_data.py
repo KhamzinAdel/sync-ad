@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from infrastructure.database import Session
-from entities.schemas import OrganizationUnitSchema
+from entities.schemas import OrganizationUnitSchema, ADSchema
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,10 @@ class AbstractOrganizationUnitRepository(ABC):
 
     @abstractmethod
     def get_organizations(self) -> list[OrganizationUnitSchema]:
-        """Получает список подразделений"""
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
         raise NotImplementedError
 
 
@@ -62,3 +65,28 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                 ]
             except SQLAlchemyError as e:
                 logger.error('Ошибка при получении списка подразделений: %s', e)
+
+    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+        """
+        Сохраняет UUID и путь подразделения в таблицу AD_ORGANIZATIONS
+        """
+
+        stmt = text("""
+            INSERT INTO AD_ORGANIZATIONS (UUID, OU_PATH) 
+            VALUES (:uuid, :path)
+        """)
+
+        with Session() as session:
+            try:
+                session.execute(
+                    stmt,
+                    {
+                        'uuid': str(ou_ad.ou_uuid),
+                        'path': ou_ad.ou_path
+                    }
+                )
+                session.commit()
+                logger.info('Сохранено в AD_ORGANIZATIONS: %s - %s', ou_ad.ou_uuid, ou_ad.ou_path)
+
+            except SQLAlchemyError as e:
+                logger.error('Ошибка сохранения в AD_ORGANIZATIONS: %s', e)

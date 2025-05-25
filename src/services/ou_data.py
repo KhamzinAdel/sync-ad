@@ -1,7 +1,7 @@
 import logging
 
-from repositories import OrganizationUnitDataRepository
-from entities.schemas import OrganizationUnitADSchema
+from repositories import AbstractOrganizationUnitRepository, OrganizationUnitDataRepository
+from entities.schemas import OrganizationUnitADSchema, ADSchema
 from utils import Base62TimeConverter, OUBuilder
 
 logger = logging.getLogger(__name__)
@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 class OrganizationUnitDataService:
     def __init__(self):
-        self.organization_unit_data_repository: OrganizationUnitDataRepository = OrganizationUnitDataRepository()
+        self.organization_unit_repository: AbstractOrganizationUnitRepository = OrganizationUnitDataRepository()
 
     def get_organizations(self) -> list[OrganizationUnitADSchema]:
-        organization_units = self.organization_unit_data_repository.get_organizations()
+        organization_units = self.organization_unit_repository.get_organizations()
 
         if organization_units:
             return [
@@ -25,3 +25,7 @@ class OrganizationUnitDataService:
                     ),
                 ) for ou in organization_units
             ]
+
+    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+        if ou_ad.ou_uuid and ou_ad.ou_path:
+            self.organization_unit_repository.save_ou_path_and_uuid(ou_ad)

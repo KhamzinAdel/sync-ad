@@ -24,6 +24,7 @@ def sync_organizations_with_ad() -> None:
             ou_path=organization.ou_path,
         )
         if ou_ad:
+            # organization_service.save_ou_path_and_uuid(ou_ad=ou_ad)
             ad_group_service.create_all_group(
                 group_name=ou_ad.ou_name,
                 group_path=ou_ad.ou_path,
