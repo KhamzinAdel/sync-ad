@@ -81,7 +81,7 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                 session.execute(
                     stmt,
                     {
-                        'uuid': str(ou_ad.ou_uuid),
+                        'uuid': ou_ad.ou_uuid,
                         'path': ou_ad.ou_path
                     }
                 )
