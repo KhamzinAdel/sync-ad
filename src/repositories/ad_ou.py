@@ -74,7 +74,7 @@ class ADRepository(AbstractADRepository):
                 logger.error("Ошибка при удалении OU '%s': %s", ou_dn, e)
                 return False
 
-    def get_ou_guid_by_dn(self, ou_dn: str) -> str:
+    def get_ou_guid_by_dn(self, ou_dn: str) -> ADGuidSchema:
         """Получает GUID организационной единицы по её названию"""
 
         with LdapConnection() as conn:
@@ -90,8 +90,6 @@ class ADRepository(AbstractADRepository):
 
             except ldap.NO_SUCH_OBJECT:
                 logger.warning("GUID для '%s' не найден.", ou_dn)
-                return False
 
             except ldap.LDAPError as e:
                 logger.error("Ошибка при получении GUID для OU '%s': %s", ou_dn, e)
-                return None
