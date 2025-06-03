@@ -159,7 +159,7 @@ def delete_group():
 
 
 if __name__ == '__main__':
-    # read_and_create_ous() # Создание подразделений
-    # read_and_create_groups()  # Создание групп
+    #read_and_create_ous() # Создание подразделений
+    read_and_create_groups()  # Создание групп
     # delete_ou() # Удаление подразделений
-    delete_group()
+    # delete_group()

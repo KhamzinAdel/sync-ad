@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 class AbstractADGroupRepository(ABC):
 
     @abstractmethod
-    def create_access_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_access_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         raise NotImplementedError
 
     @abstractmethod
-    def create_mailing_group(self, group_name: str, ou_path: str) -> ADGroupSchema:
+    def create_mailing_group(self, group_name: str, group_path: str) -> ADGroupSchema:
         raise NotImplementedError
 
     @abstractmethod
@@ -25,7 +25,7 @@ class AbstractADGroupRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def search_parent_groups(self, parent_ou_dn: str) -> list:
+    def search_parent_groups(self, parent_dn: str) -> ADParentGroupSchema:
         raise NotImplementedError
 
     @abstractmethod

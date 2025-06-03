@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from repositories import ADGroupRepository
+from repositories import ADGroupRepository, AbstractADGroupRepository
 from entities.schemas import ADGroupSchema
 from utils import OUBuilder
 
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class AdGroupService:
     def __init__(self):
-        self.ad_group_repository: ADGroupRepository = ADGroupRepository()
+        self.ad_group_repository: AbstractADGroupRepository = ADGroupRepository()
 
     def _create_access_group(self, group_name: str, group_path: str, base_code: str) -> Optional[ADGroupSchema]:
         """Создание группы доступа."""
@@ -81,7 +81,7 @@ class AdGroupService:
                 parent_group_dn, child_group_dn.group_dn
             )
             logger.info(
-                "Группа %s успешно добавлена в родительскую группу: %s",
+                "Группа %s успешно добавлена в родительскую группу %s",
                 child_group_dn.group_name, parent_group_dn
             )
 
