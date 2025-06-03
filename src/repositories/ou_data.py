@@ -54,7 +54,12 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
         )
         with Session() as session:
             try:
-                results = session.execute(stmt, {'days_threshold': days_threshold})
+                results = session.execute(
+                    stmt,
+                    {
+                        'days_threshold': days_threshold,
+                    }
+                )
                 logger.info('Получен список подразделений из базы данных')
                 return [
                     OrganizationUnitSchema(
@@ -75,8 +80,8 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
         """
 
         stmt = text("""
-            INSERT INTO AD_ORGANIZATIONS (UUID, OU_PATH) 
-            VALUES (:uuid, :path)
+            INSERT INTO AD_ORGANIZATIONS (ID, NAME)
+            VALUES (:id, :name)
         """)
 
         with Session_test() as session:
@@ -84,8 +89,8 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                 session.execute(
                     stmt,
                     {
-                        'uuid': str(ou_ad.ou_uuid),
-                        'path': ou_ad.ou_path
+                        'id': str(ou_ad.ou_uuid),
+                        'name': ou_ad.ou_path,
                     }
                 )
                 session.commit()
