@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
+from config import settings
 from infrastructure.database import Session, Session_test
 from entities.schemas import ADSchema, OrganizationUnitSchema
 
@@ -25,6 +26,8 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
     """Репозиторий для работы с подразделениями"""
 
     def get_organizations(self) -> list[OrganizationUnitSchema]:
+        days_threshold = int(settings.database.DAYS_THRESHOLD)
+
         stmt = text(
             """
             SELECT 
@@ -44,14 +47,14 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
             JOIN 
                 STAFF$DB.AD_ORGANIZATIONS org ON oa.AD_GUID = org.ID
             WHERE 
-                TO_DATE(om.p_date_create, 'dd.mm.rrrr') >= TO_DATE(SYSDATE-1000, 'dd.mm.rrrr')
+                TO_DATE(om.p_date_create, 'dd.mm.rrrr') >= TO_DATE(SYSDATE-:days_threshold, 'dd.mm.rrrr')
             ORDER BY 
                 om.office_id
             """
         )
         with Session() as session:
             try:
-                results = session.execute(stmt)
+                results = session.execute(stmt, {'days_threshold': days_threshold})
                 logger.info('Получен список подразделений из базы данных')
                 return [
                     OrganizationUnitSchema(

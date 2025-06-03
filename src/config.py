@@ -13,6 +13,7 @@ class DatabaseSettings(BaseModel):
     ORACLE_HOST: str
     ORACLE_PORT: int
     ORACLE_SERVICE_NAME: str
+    DAYS_THRESHOLD: int = 1000
 
 
 class LdapSettings(BaseModel):
