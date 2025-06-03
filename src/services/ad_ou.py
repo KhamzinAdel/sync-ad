@@ -26,6 +26,8 @@ class ADService:
         return uuid.UUID(bytes_le=result.guid)
 
     def create_ou(self, ou_name: str, ou_path: str) -> Optional[ADSchema]:
+        """Создает организационную единицу и получает GUID из AD"""
+
         update_ou_name = OUBuilder.truncate_name(ou_name, 64)
 
         ou_organization = self.ad_repository.create_ou(

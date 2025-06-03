@@ -25,6 +25,8 @@ class LdapSettings(BaseModel):
 
 
 class Settings(BaseSettings):
+    """Общие настройки"""
+
     database: DatabaseSettings
     ldap: LdapSettings
 

@@ -139,6 +139,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         """
         Ищет все группы в указанной группе.
         """
+
         search_filter = '(objectClass=group)'
 
         with LdapConnection() as conn:
@@ -157,6 +158,7 @@ class ADGroupRepository(AbstractADGroupRepository):
         """
         Добавляет указанную группу (child_group_dn) в родительскую группу.
         """
+
         with LdapConnection() as conn:
             try:
                 mod_attrs = [

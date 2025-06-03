@@ -25,6 +25,8 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
     """Репозиторий для работы с подразделениями"""
 
     def get_organizations(self) -> list[OrganizationUnitSchema]:
+        """Получаем все подразделения"""
+
         stmt = text(
             """
             SELECT 

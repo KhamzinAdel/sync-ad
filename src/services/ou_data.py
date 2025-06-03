@@ -12,6 +12,8 @@ class OrganizationUnitDataService:
         self.organization_unit_repository: AbstractOrganizationUnitRepository = OrganizationUnitDataRepository()
 
     def get_organizations(self) -> list[OrganizationUnitADSchema]:
+        """"Получаем все подразделения"""
+
         organization_units = self.organization_unit_repository.get_organizations()
 
         if organization_units:
@@ -27,5 +29,7 @@ class OrganizationUnitDataService:
             ]
 
     def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+        """Сохраняет UUID и путь подразделения в таблицу AD_ORGANIZATIONS"""
+
         if ou_ad.ou_uuid and ou_ad.ou_path:
             self.organization_unit_repository.save_ou_path_and_uuid(ou_ad)
