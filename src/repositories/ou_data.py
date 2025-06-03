@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from infrastructure.database import Session
+from infrastructure.database import Session, Session_test
 from entities.schemas import OrganizationUnitSchema, ADSchema
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
             VALUES (:uuid, :path)
         """)
 
-        with Session() as session:
+        with Session_test() as session:
             try:
                 session.execute(
                     stmt,
