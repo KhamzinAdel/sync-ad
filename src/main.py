@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def sync_organizations_with_ad() -> None:
-    """Вызов функции создания OU и групп"""
+    """Получение и создание подразделений и групп"""
 
     organization_service: OrganizationUnitDataService = OrganizationUnitDataService()
     ad_service: ADService = ADService()
