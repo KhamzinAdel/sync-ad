@@ -156,7 +156,7 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
 
                 if result:
                     return OrganizationUnitSchema(
-                        ou_uuid=result.ID,
+                        ou_uuid=result.id,
                     )
                 return None
             except SQLAlchemyError as e:
