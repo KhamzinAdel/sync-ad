@@ -127,7 +127,7 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                     stmt,
                     {
                         'id': str(ou_ad.ou_uuid),
-                        'name': ou_ad.ou_path
+                        'name': ou_ad.ou_path,
                     }
                 )
                 session.commit()
@@ -149,7 +149,9 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
             try:
                 result = session.execute(
                     query,
-                    {'id': str(ou_uuid)}
+                    {
+                        'id': str(ou_uuid),
+                    }
                 ).fetchone()
 
                 if result:

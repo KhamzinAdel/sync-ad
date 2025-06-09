@@ -34,8 +34,6 @@ class OrganizationUnitDataService:
         if ou_ad.ou_uuid and ou_ad.ou_path:
             existing = self.organization_unit_repository.get_organization(ou_uuid=ou_ad.ou_uuid)
             if existing:
-                print('Я есть')
                 self.organization_unit_repository.update_organization(ou_ad=ou_ad)
             else:
-                print('Меня нет')
                 self.organization_unit_repository.create_organization(ou_ad=ou_ad)
