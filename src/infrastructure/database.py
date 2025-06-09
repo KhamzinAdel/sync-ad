@@ -10,8 +10,3 @@ engine = create_engine(
 )
 
 Session = sessionmaker(bind=engine, expire_on_commit=False)
-
-engine_db_test = create_engine(
-    "oracle+oracledb://system:oraclepass@localhost:1521/FREE"
-)
-Session_test = sessionmaker(bind=engine_db_test, expire_on_commit=False)
