@@ -2,12 +2,17 @@ from dataclasses import dataclass
 
 
 @dataclass
-class OrganizationUnitSchema:
+class OrganizationUnitListSchema:
     id: int  # id подразделения
     parent_name: str  # Группа в которую входит подразделение
     name: str  # Наименование подразделения
     data_create: str  # Дата создания подразделения
     full_path: str   # Полный путь подразделения parent_name
+
+
+@dataclass
+class OrganizationUnitSchema:
+    ou_uuid: str  # uuid подразделения
 
 
 @dataclass

@@ -1,31 +1,43 @@
 import logging
+from typing import Optional
 from abc import ABC, abstractmethod
 
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from config import settings
-from infrastructure.database import Session, Session_test
-from entities.schemas import ADSchema, OrganizationUnitSchema
+from infrastructure.database import Session
+from entities.schemas import ADSchema, OrganizationUnitListSchema, OrganizationUnitSchema
 
 logger = logging.getLogger(__name__)
 
 
 class AbstractOrganizationUnitRepository(ABC):
+    """Интерфейс для работы с подразделениями"""
 
     @abstractmethod
-    def get_organizations(self) -> list[OrganizationUnitSchema]:
+    def get_organizations(self) -> list[OrganizationUnitListSchema]:
         raise NotImplementedError
 
     @abstractmethod
-    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+    def create_organization(self, ou_ad: ADSchema) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_organization(self, ou_ad: ADSchema) -> OrganizationUnitSchema:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_organization(self, ou_uuid: str) -> OrganizationUnitSchema:
         raise NotImplementedError
 
 
 class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
     """Репозиторий для работы с подразделениями"""
 
-    def get_organizations(self) -> list[OrganizationUnitSchema]:
+    def get_organizations(self) -> list[OrganizationUnitListSchema]:
+        """Получение всех подразделений за конкретные дни"""
+
         days_threshold = int(settings.database.DAYS_THRESHOLD)
 
         stmt = text(
@@ -62,7 +74,7 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                 )
                 logger.info('Получен список подразделений из базы данных')
                 return [
-                    OrganizationUnitSchema(
+                    OrganizationUnitListSchema(
                         id=result.office_id,
                         parent_name=result.group_name,
                         name=result.new_name,
@@ -74,17 +86,17 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
             except SQLAlchemyError as e:
                 logger.error('Ошибка при получении списка подразделений: %s', e)
 
-    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+    def create_organization(self, ou_ad: ADSchema) -> None:
         """
         Сохраняет UUID и путь подразделения в таблицу AD_ORGANIZATIONS
         """
 
         stmt = text("""
-            INSERT INTO AD_ORGANIZATIONS (ID, NAME)
+            INSERT INTO STAFF$DB.AD_ORGANIZATIONS (ID, NAME)
             VALUES (:id, :name)
         """)
 
-        with Session_test() as session:
+        with Session() as session:
             try:
                 session.execute(
                     stmt,
@@ -97,4 +109,53 @@ class OrganizationUnitDataRepository(AbstractOrganizationUnitRepository):
                 logger.info('Сохранено в AD_ORGANIZATIONS: %s - %s', ou_ad.ou_uuid, ou_ad.ou_path)
 
             except SQLAlchemyError as e:
+                session.rollback()
                 logger.error('Ошибка сохранения в AD_ORGANIZATIONS: %s', e)
+
+    def update_organization(self, ou_ad: ADSchema) -> None:
+        """Обновляет существующее подразделение"""
+
+        stmt = text("""
+            UPDATE STAFF$DB.AD_ORGANIZATIONS
+            SET NAME = :name
+            WHERE ID = :id
+        """)
+
+        with Session() as session:
+            try:
+                session.execute(
+                    stmt,
+                    {
+                        'id': str(ou_ad.ou_uuid),
+                        'name': ou_ad.ou_path
+                    }
+                )
+                session.commit()
+                logger.info(f"Обновлено подразделение: {ou_ad.ou_uuid}")
+            except SQLAlchemyError as e:
+                session.rollback()
+                logger.error(f"Ошибка обновления подразделения {ou_ad.ou_uuid}: {e}")
+
+    def get_organization(self, ou_uuid: str) -> Optional[OrganizationUnitSchema]:
+        """Получает подразделение по UUID"""
+
+        query = text("""
+            SELECT ID, NAME
+            FROM STAFF$DB.AD_ORGANIZATIONS
+            WHERE ID = :id
+        """)
+
+        with Session() as session:
+            try:
+                result = session.execute(
+                    query,
+                    {'id': str(ou_uuid)}
+                ).fetchone()
+
+                if result:
+                    return OrganizationUnitSchema(
+                        ou_uuid=result.ID,
+                    )
+                return None
+            except SQLAlchemyError as e:
+                logger.error(f"Ошибка получения подразделения {ou_uuid}: {e}")

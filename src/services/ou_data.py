@@ -12,6 +12,8 @@ class OrganizationUnitDataService:
         self.organization_unit_repository: AbstractOrganizationUnitRepository = OrganizationUnitDataRepository()
 
     def get_organizations(self) -> list[OrganizationUnitADSchema]:
+        """Получение всех подразделений за конкретные дни"""
+
         organization_units = self.organization_unit_repository.get_organizations()
 
         if organization_units:
@@ -26,6 +28,14 @@ class OrganizationUnitDataService:
                 ) for ou in organization_units
             ]
 
-    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
+    def create_or_update_organization(self, ou_ad: ADSchema) -> None:
+        """Создание или обновление подразделения"""
+
         if ou_ad.ou_uuid and ou_ad.ou_path:
-            self.organization_unit_repository.save_ou_path_and_uuid(ou_ad)
+            existing = self.organization_unit_repository.get_organization(ou_uuid=ou_ad.ou_uuid)
+            if existing:
+                print('Я есть')
+                self.organization_unit_repository.update_organization(ou_ad=ou_ad)
+            else:
+                print('Меня нет')
+                self.organization_unit_repository.create_organization(ou_ad=ou_ad)
