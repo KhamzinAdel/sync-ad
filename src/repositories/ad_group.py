@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 import ldap
 from ldap.modlist import addModlist
 
-from infrastructure.ldap_connection import LdapConnection
-from entities.enums import GroupScope, GroupType
-from entities.schemas import ADGroupSchema, ADParentGroupSchema
+from src.infrastructure.ldap_connection import LdapConnection
+from src.entities.enums import GroupScope, GroupType
+from src.entities.schemas import ADGroupSchema, ADParentGroupSchema
 
 logger = logging.getLogger(__name__)
 

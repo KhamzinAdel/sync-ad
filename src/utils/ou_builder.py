@@ -1,4 +1,4 @@
-from common.constants import (
+from src.common.constants import (
     ABBREVIATIONS,
     GROUP_NAME,
     FULL_PATH_AD,

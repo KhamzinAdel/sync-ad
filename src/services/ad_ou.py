@@ -2,9 +2,9 @@ import logging
 import uuid
 from typing import Optional
 
-from repositories import AbstractADRepository, ADRepository
-from entities.schemas import ADSchema
-from utils import OUBuilder
+from src.repositories import AbstractADRepository, ADRepository
+from src.entities.schemas import ADSchema
+from src.utils import OUBuilder
 
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,7 @@
 import logging
-from infrastructure.logger import configure_logging
-from services import OrganizationUnitDataService, ADService, AdGroupService
+
+from src.infrastructure.logger import configure_logging
+from src.services import OrganizationUnitDataService, ADService, AdGroupService
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def sync_organizations_with_ad() -> None:
             ou_path=organization.ou_path,
         )
         if ou_ad:
-            organization_service.save_ou_path_and_uuid(ou_ad=ou_ad)
+            organization_service.create_or_update_organization(ou_ad=ou_ad)
             ad_group_service.create_all_group(
                 group_name=ou_ad.ou_name,
                 group_path=ou_ad.ou_path,

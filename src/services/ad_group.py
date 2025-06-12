@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 
-from repositories import ADGroupRepository, AbstractADGroupRepository
-from entities.schemas import ADGroupSchema
-from utils import OUBuilder
+from src.repositories import ADGroupRepository, AbstractADGroupRepository
+from src.entities.schemas import ADGroupSchema
+from src.utils import OUBuilder
 
 logger = logging.getLogger(__name__)
 

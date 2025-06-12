@@ -1,8 +1,8 @@
 import logging
 
-from repositories import AbstractOrganizationUnitRepository, OrganizationUnitDataRepository
-from entities.schemas import OrganizationUnitADSchema, ADSchema
-from utils import Base62TimeConverter, OUBuilder
+from src.repositories import AbstractOrganizationUnitRepository, OrganizationUnitDataRepository
+from src.entities.schemas import OrganizationUnitADSchema, ADSchema
+from src.utils import Base62TimeConverter, OUBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ class OrganizationUnitDataService:
         self.organization_unit_repository: AbstractOrganizationUnitRepository = OrganizationUnitDataRepository()
 
     def get_organizations(self) -> list[OrganizationUnitADSchema]:
-        """"Получаем все подразделения"""
+        """Получение всех подразделений за конкретные дни"""
 
         organization_units = self.organization_unit_repository.get_organizations()
 
@@ -28,8 +28,12 @@ class OrganizationUnitDataService:
                 ) for ou in organization_units
             ]
 
-    def save_ou_path_and_uuid(self, ou_ad: ADSchema) -> None:
-        """Сохраняет UUID и путь подразделения в таблицу AD_ORGANIZATIONS"""
+    def create_or_update_organization(self, ou_ad: ADSchema) -> None:
+        """Создание или обновление подразделения"""
 
         if ou_ad.ou_uuid and ou_ad.ou_path:
-            self.organization_unit_repository.save_ou_path_and_uuid(ou_ad)
+            existing = self.organization_unit_repository.get_organization(ou_uuid=ou_ad.ou_uuid)
+            if existing:
+                self.organization_unit_repository.update_organization(ou_ad=ou_ad)
+            else:
+                self.organization_unit_repository.create_organization(ou_ad=ou_ad)

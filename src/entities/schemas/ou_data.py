@@ -2,12 +2,17 @@ from dataclasses import dataclass
 
 
 @dataclass
-class OrganizationUnitSchema:
+class OrganizationUnitListSchema:
     id: int
     parent_name: str
     name: str
     data_create: str
     full_path: str
+
+
+@dataclass
+class OrganizationUnitSchema:
+    ou_uuid: str
 
 
 @dataclass
