@@ -232,21 +232,6 @@ docs = ["Sphinx", "furo"]
 test = ["objgraph", "psutil"]
 
 [[package]]
-name = "ldap3"
-version = "2.9.1"
-description = "A strictly RFC 4510 conforming LDAP V3 pure Python client library"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "ldap3-2.9.1-py2.py3-none-any.whl", hash = "sha256:5869596fc4948797020d3f03b7939da938778a0f9e2009f7a072ccf92b8e8d70"},
-    {file = "ldap3-2.9.1.tar.gz", hash = "sha256:f3e7fc4718e3f09dda568b57100095e0ce58633bcabbed8667ce3f8fbaa4229f"},
-]
-
-[package.dependencies]
-pyasn1 = ">=0.4.6"
-
-[[package]]
 name = "oracledb"
 version = "2.5.1"
 description = "Python interface to Oracle Database"
@@ -654,4 +639,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "d91a1e1fb5461362c38557715e55c6f20109fc967778e51b51158f2a43560d1b"
+content-hash = "f2a3f7c6efa26239c9ff7dd9c3fd550b0a814c16360af451bda2023cee85350f"
