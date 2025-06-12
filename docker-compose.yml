@@ -5,11 +5,14 @@ services:
       - oracle-data:/opt/oracle/oradata
       - oracle-backup:/opt/oracle/backup
     environment:
-      - ORACLE_PWD=oraclepass
+      - ORACLE_PWD=${ORACLE_PASSWORD}
     ports:
       - "1521:1521"
     healthcheck:
       test: /opt/oracle/checkDBStatus.sh
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   oracle-data:
