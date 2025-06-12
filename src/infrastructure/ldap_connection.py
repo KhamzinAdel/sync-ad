@@ -1,7 +1,7 @@
 import ldap
 
-from common.exception import LDAPConnectionError
-from config import settings
+from src.common.exception import LDAPConnectionError
+from src.config import settings
 
 
 class LdapConnection:
