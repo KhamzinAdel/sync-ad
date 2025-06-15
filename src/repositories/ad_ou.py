@@ -3,10 +3,6 @@ import logging
 import ldap.modlist as modlist
 from abc import ABC, abstractmethod
 
-
-
-
-
 from infrastructure.ldap_connection import LdapConnection
 from entities.schemas import ADSchema, ADGuidSchema
 
