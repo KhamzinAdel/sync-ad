@@ -3,6 +3,10 @@ import logging
 import ldap.modlist as modlist
 from abc import ABC, abstractmethod
 
+
+
+
+
 from infrastructure.ldap_connection import LdapConnection
 from entities.schemas import ADSchema, ADGuidSchema
 
@@ -10,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractADRepository(ABC):
-
     @abstractmethod
     def create_ou(self, ou_name: str, ou_path: str) -> ADSchema:
         raise NotImplementedError
@@ -34,10 +37,10 @@ class ADRepository(AbstractADRepository):
         Создаем OU (Организационную единицу) в Active Directory
         """
 
-        dn = f'OU={ou_name},{ou_path}'
+        dn = f"OU={ou_name},{ou_path}"
         attrs = {
-            'objectClass': [b'top', b'organizationalUnit'],
-            'OU': [ou_name.encode('utf-8')]
+            "objectClass": [b"top", b"organizationalUnit"],
+            "OU": [ou_name.encode("utf-8")],
         }
         ldif = modlist.addModlist(attrs)
 
@@ -63,7 +66,10 @@ class ADRepository(AbstractADRepository):
         with LdapConnection() as conn:
             try:
                 conn.delete_s(ou_dn)
-                logger.info("Организационная единица '%s' успешно удалена из Active Directory.", ou_dn)
+                logger.info(
+                    "Организационная единица '%s' успешно удалена из Active Directory.",
+                    ou_dn,
+                )
                 return True
 
             except ldap.NO_SUCH_OBJECT:
@@ -82,11 +88,11 @@ class ADRepository(AbstractADRepository):
                 result = conn.search_s(
                     ou_dn,
                     ldap.SCOPE_BASE,
-                    '(objectClass=organizationalUnit)',
-                    ['objectGUID']
+                    "(objectClass=organizationalUnit)",
+                    ["objectGUID"],
                 )
 
-                return ADGuidSchema(guid=result[0][1].get('objectGUID', [None])[0])
+                return ADGuidSchema(guid=result[0][1].get("objectGUID", [None])[0])
 
             except ldap.NO_SUCH_OBJECT:
                 logger.warning("GUID для '%s' не найден.", ou_dn)
