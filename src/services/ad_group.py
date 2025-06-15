@@ -4,8 +4,7 @@ from typing import Optional
 
 from src.repositories import ADGroupRepository, AbstractADGroupRepository
 from src.entities.schemas import ADGroupSchema
-from src.utils import OUBuilder
-from utils import Base62TimeConverter
+from src.utils import OUBuilder, Base62TimeConverter
 
 logger = logging.getLogger(__name__)
 
