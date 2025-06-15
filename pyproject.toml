@@ -12,6 +12,7 @@ oracledb = "^2.5.0"
 python-ldap = "^3.4.4"
 ruff = "^0.9.5"
 pydantic-settings = "^2.7.1"
+pre-commit = "^4.2.0"
 
 
 [build-system]
