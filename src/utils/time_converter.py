@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Base62TimeConverter:
-    """Кодирование и декодирование времени в формате base63."""
+    """Кодирование и декодирование времени в формате base62."""
 
     _DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 

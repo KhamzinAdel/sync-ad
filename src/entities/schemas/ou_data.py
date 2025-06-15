@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -6,7 +7,7 @@ class OrganizationUnitListSchema:
     id: int
     parent_name: str
     name: str
-    data_create: str
+    date_create: datetime
     full_path: str
 
 
@@ -18,5 +19,5 @@ class OrganizationUnitSchema:
 @dataclass
 class OrganizationUnitADSchema:
     name: str
-    base_code: str
+    date_create: datetime
     ou_path: str

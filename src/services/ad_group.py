@@ -1,9 +1,11 @@
 import logging
+from datetime import datetime
 from typing import Optional
 
 from src.repositories import ADGroupRepository, AbstractADGroupRepository
 from src.entities.schemas import ADGroupSchema
 from src.utils import OUBuilder
+from utils import Base62TimeConverter
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +87,10 @@ class AdGroupService:
                 child_group_dn.group_name, parent_group_dn
             )
 
-    def create_all_group(self, group_name: str, group_path: str, base_code: str) -> None:
+    def create_all_group(self, group_name: str, group_path: str, date_create: datetime) -> None:
         """Основной метод по созданию групп"""
+
+        base_code = Base62TimeConverter.to_base62(date_create)
 
         group_access = self._create_access_group(group_name, group_path, base_code)
 

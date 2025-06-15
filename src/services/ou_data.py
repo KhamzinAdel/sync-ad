@@ -20,7 +20,7 @@ class OrganizationUnitDataService:
             return [
                 OrganizationUnitADSchema(
                     name=ou.name.strip(),
-                    base_code=Base62TimeConverter.to_base62(ou.data_create),
+                    date_create=ou.date_create,
                     ou_path=OUBuilder.build_ou_path(
                         ou.full_path,
                         ou.parent_name.strip(),

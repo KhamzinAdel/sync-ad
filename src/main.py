@@ -29,7 +29,7 @@ def sync_organizations_with_ad() -> None:
             ad_group_service.create_all_group(
                 group_name=ou_ad.ou_name,
                 group_path=ou_ad.ou_path,
-                base_code=organization.base_code,
+                date_create=organization.date_create,
             )
 
     logger.info('Организации cинхронизированы с AD')
