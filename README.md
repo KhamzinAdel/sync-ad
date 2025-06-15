@@ -7,7 +7,6 @@
 ## Инструменты
 
 * Python
+* Oracle Database
 * SQLAlchemy
-* oracledb
 * python-ldap
-* ruff

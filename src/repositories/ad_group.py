@@ -91,7 +91,6 @@ class ADGroupRepository(AbstractADGroupRepository):
 
         dn = f'CN={name},{group_path}'
 
-        # Атрибуты группы
         attrs = {
             'objectClass': [b'top', b'group'],
             'CN': [name.encode('utf-8')],
