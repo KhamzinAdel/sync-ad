@@ -16,19 +16,19 @@ class AbstractOrganizationUnitRepository(ABC):
     """Интерфейс для работы с подразделениями"""
 
     @abstractmethod
-    def get_organizations(self) -> list[OrganizationUnitListSchema]:
+    def get_organizations(self):
         raise NotImplementedError
 
     @abstractmethod
-    def create_organization(self, ou_ad: ADSchema) -> None:
+    def create_organization(self, ou_ad: ADSchema):
         raise NotImplementedError
 
     @abstractmethod
-    def update_organization(self, ou_ad: ADSchema) -> OrganizationUnitSchema:
+    def update_organization(self, ou_ad: ADSchema):
         raise NotImplementedError
 
     @abstractmethod
-    def get_organization(self, ou_uuid: str) -> OrganizationUnitSchema:
+    def get_organization(self, ou_uuid: str):
         raise NotImplementedError
 
 

@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 
 class AbstractADRepository(ABC):
     @abstractmethod
-    def create_ou(self, ou_name: str, ou_path: str) -> ADSchema:
+    def create_ou(self, ou_name: str, ou_path: str):
         raise NotImplementedError
 
     @abstractmethod
-    def delete_ou(self, ou_dn: str) -> bool:
+    def delete_ou(self, ou_dn: str):
         raise NotImplementedError
 
     @abstractmethod
-    def get_ou_guid_by_dn(self, ou_dn: str) -> ADGuidSchema:
+    def get_ou_guid_by_dn(self, ou_dn: str):
         raise NotImplementedError
 
 
