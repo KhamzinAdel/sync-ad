@@ -9,4 +9,5 @@
 * Python
 * Oracle Database
 * SQLAlchemy
+* Active Directory
 * python-ldap
